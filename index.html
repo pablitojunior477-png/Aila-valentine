@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aila, urgent matter...</title>
+  <style>
+    :root{
+      --bg1:#ff758c;
+      --bg2:#ffb199;
+      --card:#ffffffee;
+      --ink:#1d1d1f;
+      --accent:#ff3b6a;
+      --shadow: 0 18px 50px rgba(0,0,0,.22);
+      --radius: 22px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 20% 20%, #ffe4ea 0%, transparent 55%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--ink);
+      overflow:hidden;
+    }
+    .wrap{ width:min(720px, 92vw); }
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding: 26px 20px;
+      backdrop-filter: blur(6px);
+      position:relative;
+      overflow:hidden;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#0000000a;
+      border:1px solid #00000014;
+      user-select:none;
+    }
+    .title{
+      font-size: 34px;
+      margin: 8px 0 6px;
+      letter-spacing: -0.02em;
+    }
+    .subtitle{
+      font-size: 16px;
+      margin: 0 0 14px;
+      opacity:.85;
+    }
+    .typebox{
+      margin-top:14px;
+      background:#ffffff;
+      border:1px solid #00000012;
+      border-radius: 18px;
+      padding:16px 14px;
+      box-shadow: 0 8px 22px rgba(0,0,0,.07);
+    }
+    .typing{
+      font-size: 19px;
+      line-height: 1.35;
+      margin:0;
+      min-height: 54px;
+      white-space: pre-wrap;
+    }
+    .caret{
+      display:inline-block;
+      width: 10px;
+      margin-left:2px;
+      border-left: 2px solid #111;
+      height: 1em;
+      transform: translateY(2px);
+      animation: blink .9s infinite;
+    }
+    @keyframes blink { 50% { opacity:0; } }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+      align-items:center;
+    }
+    button{
+      font-size:18px;
+      padding:12px 16px;
+      border:0;
+      border-radius: 16px;
+      cursor:pointer;
+      transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+      user-select:none;
+    }
+    button:active{ transform: scale(.98); }
+    .primary{
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 12px 26px rgba(255,59,106,.25);
+    }
+    .primary:hover{ filter: brightness(1.03); transform: translateY(-1px); }
+    .ghost{
+      background:#00000008;
+      border:1px solid #00000014;
+      color:#222;
+    }
+    .ghost:hover{ filter: brightness(1.03); transform: translateY(-1px); }
+
+    .progress{
+      margin-left:auto;
+      font-size:13px;
+      opacity:.8;
+    }
+
+    .panel{
+      margin-top: 14px;
+      background:#ffffff;
+      border:1px solid #00000012;
+      border-radius: 18px;
+      padding:14px;
+      display:none;
+      box-shadow: 0 8px 22px rgba(0,0,0,.07);
+    }
+    .panel.show{ display:block; }
+    .q{
+      font-size:16px;
+      margin:0 0 10px;
+      font-weight:700;
+    }
+    .opts{
+      display:grid;
+      gap:8px;
+    }
+    .opt{
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid #00000014;
+      background:#00000005;
+      cursor:pointer;
+      transition: transform .14s ease, filter .14s ease, background .14s ease;
+      font-size:16px;
+    }
+    .opt:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+    .opt.correct{
+      background:#19c37d1a;
+      border-color:#19c37d55;
+    }
+    .opt.wrong{
+      background:#ff3b6a1a;
+      border-color:#ff3b6a55;
+    }
+
+    .toast{
+      position: fixed;
+      left:50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: #111;
+      color:#fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      font-size: 14px;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .toast.show{
+      opacity:1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    .scan{
+      display:none;
+      margin-top: 14px;
+      background:#0b0b10;
+      color:#d6d6ff;
+      border-radius: 18px;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 14px;
+      border:1px solid #ffffff1a;
+      box-shadow: 0 10px 26px rgba(0,0,0,.2);
+    }
+    .scan.show{ display:block; }
+    .bar{
+      height: 10px;
+      background: #ffffff14;
+      border-radius: 999px;
+      overflow:hidden;
+      margin-top:10px;
+    }
+    .fill{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, #8b5cf6, #ff3b6a);
+      border-radius: 999px;
+      transition: width .25s ease;
+    }
+
+    /* floating hearts background */
+    .float{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      opacity:.22;
+      filter: blur(.2px);
+    }
+    .float span{
+      position:absolute;
+      font-size: 26px;
+      animation: drift linear infinite;
+    }
+    @keyframes drift{
+      from{ transform: translateY(110vh) rotate(0deg); }
+      to  { transform: translateY(-20vh) rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="float" id="float"></div>
+
+      <div class="topbar">
+        <div class="pill">📞 Official Valentine Hotline</div>
+        <div class="pill" id="statusPill">Status: pending approval</div>
+      </div>
+
+      <h1 class="title">Aila 😌</h1>
+      <p class="subtitle">Please do not panic. This is a friendly audit of your Valentine availability.</p>
+
+      <div class="typebox">
+        <p class="typing" id="typing"></p><span class="caret"></span>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="btnProceed">Proceed (very serious)</button>
+        <button class="ghost" id="btnSkip">Skip to “obviously yes”</button>
+        <div class="progress" id="progress">Step 1 / 4</div>
+      </div>
+
+      <div class="scan" id="scan">
+        <div id="scanText">Initializing romance protocol…</div>
+        <div class="bar"><div class="fill" id="fill"></div></div>
+      </div>
+
+      <div class="panel" id="quiz">
+        <div class="q" id="qText">Question</div>
+        <div class="opts" id="opts"></div>
+      </div>
+
+      <div class="panel" id="final">
+        <div class="q">✅ Result: You passed (with distinction)</div>
+        <div style="font-size:18px; line-height:1.4;">
+          Therefore, by the ancient laws of romance, you are now officially my Valentine. 💖<br><br>
+          Next steps:
+          <ul style="margin:10px 0 0; padding-left:18px;">
+            <li>Dinner 🍝 (required)</li>
+            <li>Dessert 🍰 (non-negotiable)</li>
+            <li>Unreasonably cute photos 📸</li>
+          </ul>
+        </div>
+        <div class="actions" style="margin-top:12px;">
+          <button class="primary" id="btnConfetti">Confirm (send hearts)</button>
+          <button class="ghost" id="btnCopy">Copy a message to send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copied ✅</div>
+
+  <script>
+    // ===== floating hearts background =====
+    (function makeFloat(){
+      const f = document.getElementById("float");
+      const emojis = ["💖","💗","💘","💞","🌹","✨"];
+      for(let i=0;i<18;i++){
+        const s=document.createElement("span");
+        s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+        s.style.left = (Math.random()*100)+"%";
+        s.style.animationDuration = (10 + Math.random()*12) + "s";
+        s.style.animationDelay = (-Math.random()*20) + "s";
+        s.style.fontSize = (18 + Math.random()*20) + "px";
+        f.appendChild(s);
+      }
+    })();
+
+    // ===== typewriter =====
+    const typingEl = document.getElementById("typing");
+    const statusPill = document.getElementById("statusPill");
+    const progressEl = document.getElementById("progress");
+
+    const scriptLines = [
+      "Hello Aila.\nThis is an automated message from the Valentine Department.",
+      "We have detected an unusually high level of cuteness in your vicinity.",
+      "To continue, please complete the Mandatory Valentine Verification™.",
+      "Warning: choosing 'yes' may lead to dinner, dessert, and smiling a lot."
+    ];
+
+    let lineIdx = 0;
+    function typeLine(text, cb){
+      typingEl.textContent = "";
+      let i=0;
+      const speed = 18 + Math.random()*10;
+      const t = setInterval(()=>{
+        typingEl.textContent += text[i++] || "";
+        if(i > text.length){
+          clearInterval(t);
+          cb && cb();
+        }
+      }, speed);
+    }
+
+    function playTyping(){
+      progressEl.textContent = "Step 1 / 4";
+      statusPill.textContent = "Status: assessing vibes";
+      typeLine(scriptLines[0], ()=>{});
+    }
+    playTyping();
+
+    // ===== fake scan =====
+    const scan = document.getElementById("scan");
+    const scanText = document.getElementById("scanText");
+    const fill = document.getElementById("fill");
+
+    function runScan(cb){
+      scan.classList.add("show");
+      const steps = [
+        ["Checking calendar…", 22],
+        ["Checking snack preferences…", 48],
+        ["Checking tolerance for cheesy jokes…", 71],
+        ["Searching for other options…", 88],
+        ["Other options found: 0 ✅", 100]
+      ];
+      let k=0;
+      fill.style.width = "0%";
+      const timer = setInterval(()=>{
+        scanText.textContent = steps[k][0];
+        fill.style.width = steps[k][1] + "%";
+        k++;
+        if(k >= steps.length){
+          clearInterval(timer);
+          setTimeout(()=>{
+            cb && cb();
+          }, 500);
+        }
+      }, 650);
+    }
+
+    // ===== quiz =====
+    const quizPanel = document.getElementById("quiz");
+    const qText = document.getElementById("qText");
+    const opts = document.getElementById("opts");
+    const finalPanel = document.getElementById("final");
+
+    const quiz = [
+      {
+        q: "1) Choose the correct answer:",
+        a: 0,
+        o: ["Yes, obviously 💖", "Maybe?", "I need to consult my lawyer"]
+      },
+      {
+        q: "2) Pick your Valentine difficulty level:",
+        a: 1,
+        o: ["Hard mode (awkward eye contact)", "Easy mode (cute date + laughs)", "Expert mode (I bring flowers AND puns)"]
+      },
+      {
+        q: "3) Final confirmation:",
+        a: 2,
+        o: ["I accept but only for dessert", "I accept but only for dinner", "I accept (and also dessert) 🍰"]
+      }
+    ];
+
+    let qIdx = 0;
+    function showQuizQuestion(){
+      quizPanel.classList.add("show");
+      finalPanel.classList.remove("show");
+      opts.innerHTML = "";
+      const item = quiz[qIdx];
+      qText.textContent = item.q;
+
+      item.o.forEach((label, i)=>{
+        const b = document.createElement("div");
+        b.className = "opt";
+        b.textContent = label;
+        b.onclick = () => {
+          if(i === item.a){
+            b.classList.add("correct");
+            toast("Correct ✅");
+            setTimeout(()=>{
+              qIdx++;
+              if(qIdx >= quiz.length){
+                quizPanel.classList.remove("show");
+                finalPanel.classList.add("show");
+                statusPill.textContent = "Status: approved ✅";
+                progressEl.textContent = "Step 4 / 4";
+                heartsBurst(28);
+              } else {
+                showQuizQuestion();
+              }
+            }, 450);
+          } else {
+            b.classList.add("wrong");
+            toast("Nice try 😄 (pick the correct one)");
+            setTimeout(()=> b.classList.remove("wrong"), 650);
+          }
+        };
+        opts.appendChild(b);
+      });
+    }
+
+    // ===== confetti hearts =====
+    function heartsBurst(n=22){
+      for(let i=0;i<n;i++){
+        const s=document.createElement("span");
+        s.textContent = ["💖","💗","💘","💞","✨"][Math.floor(Math.random()*5)];
+        s.style.position="fixed";
+        s.style.left=(Math.random()*100)+"vw";
+        s.style.top="-12px";
+        s.style.fontSize=(16+Math.random()*22)+"px";
+        s.style.transition="transform 2.4s linear, opacity 2.4s linear";
+        s.style.zIndex="9999";
+        document.body.appendChild(s);
+        requestAnimationFrame(()=>{
+          s.style.transform=`translateY(112vh) rotate(${Math.random()*520}deg)`;
+          s.style.opacity="0";
+        });
+        setTimeout(()=>s.remove(),2500);
+      }
+    }
+
+    // ===== toast =====
+    const toastEl = document.getElementById("toast");
+    let toastTimer;
+    function toast(msg){
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=> toastEl.classList.remove("show"), 1100);
+    }
+
+    // ===== button flow =====
+    const btnProceed = document.getElementById("btnProceed");
+    const btnSkip = document.getElementById("btnSkip");
+
+    btnProceed.onclick = () => {
+      lineIdx++;
+      if(lineIdx === 1){
+        progressEl.textContent = "Step 2 / 4";
+        statusPill.textContent = "Status: verifying cuteness";
+        typeLine(scriptLines[1]);
+      } else if(lineIdx === 2){
+        progressEl.textContent = "Step 3 / 4";
+        statusPill.textContent = "Status: running checks";
+        typeLine(scriptLines[2], ()=>{
+          runScan(()=>{
+            scanText.textContent = "Scan complete ✅";
+            setTimeout(()=>{
+              showQuizQuestion();
+            }, 350);
+          });
+        });
+      } else if(lineIdx >= 3){
+        typeLine(scriptLines[3]);
+        heartsBurst(18);
+      }
+    };
+
+    btnSkip.onclick = () => {
+      progressEl.textContent = "Fast track engaged ⚡";
+      statusPill.textContent = "Status: skipping to approval";
+      runScan(()=>{
+        qIdx = 0;
+        showQuizQuestion();
+      });
+    };
+
+    // ===== final actions =====
+    document.getElementById("btnConfetti").onclick = () => {
+      heartsBurst(40);
+      toast("Valentine confirmed 💖");
+    };
+
+    document.getElementById("btnCopy").onclick = async () => {
+      const msg =
+`Aila 💖
+
+Urgent update from the Valentine Department:
+You have been officially selected as my Valentine.
+
+Next steps:
+🍝 Dinner
+🍰 Dessert
+✨ Being ridiculously cute together
+
+So… what day are you free? 😄`;
+      try{
+        await navigator.clipboard.writeText(msg);
+        toast("Copied ✅");
+      } catch(e){
+        // fallback for older browsers
+        const t = document.createElement("textarea");
+        t.value = msg;
+        document.body.appendChild(t);
+        t.select();
+        document.execCommand("copy");
+        t.remove();
+        toast("Copied ✅");
+      }
+    };
+  </script>
+</body>
+</html>
