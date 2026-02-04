@@ -1,25 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aila, urgent matter...</title>
+  <title>Aila — Valentine Quest</title>
   <style>
     :root{
-      --bg1:#ff758c;
-      --bg2:#ffb199;
+      --bg1:#ff2d55;
+      --bg2:#ffb3c1;
+      --bg3:#ffd6e0;
       --card:#ffffffee;
-      --ink:#1d1d1f;
-      --accent:#ff3b6a;
-      --shadow: 0 18px 50px rgba(0,0,0,.22);
+      --ink:#141417;
+      --muted:#5c5c66;
+      --accent:#ff2d55;
+      --good:#19c37d;
+      --warn:#ff9500;
+      --shadow: 0 18px 55px rgba(0,0,0,.22);
       --radius: 22px;
     }
     *{ box-sizing:border-box; }
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 800px at 20% 20%, #ffe4ea 0%, transparent 55%),
-                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      background:
+        radial-gradient(900px 700px at 18% 18%, var(--bg3) 0%, transparent 60%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
       min-height:100vh;
       display:flex;
       align-items:center;
@@ -27,21 +32,63 @@
       color:var(--ink);
       overflow:hidden;
     }
-    .wrap{ width:min(720px, 92vw); }
+    .wrap{ width:min(980px, 94vw); }
+
     .card{
       background:var(--card);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
-      padding: 26px 20px;
-      backdrop-filter: blur(6px);
+      padding: 18px;
       position:relative;
       overflow:hidden;
+      backdrop-filter: blur(7px);
     }
-    .topbar{
+
+    /* Preloader overlay */
+    .overlay{
+      position:absolute; inset:0;
+      background: linear-gradient(135deg, rgba(255,45,85,.88), rgba(255,179,193,.88));
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      gap:12px;
+      justify-content:center;
+      z-index:9999;
+      transition: opacity .35s ease, transform .35s ease;
+    }
+    .overlay.hide{
+      opacity:0;
+      transform: scale(1.02);
+      pointer-events:none;
+    }
+    .loaderCard{
+      width:min(520px, 92vw);
+      background:#ffffffee;
+      border-radius:22px;
+      border:1px solid #00000012;
+      box-shadow: 0 18px 55px rgba(0,0,0,.25);
+      padding:18px;
+      text-align:center;
+    }
+    .loaderTitle{ font-size:22px; font-weight:900; margin:4px 0 10px; }
+    .loaderText{ color:var(--muted); margin:0 0 12px; font-size:14px; }
+    .loadBar{ height:10px; background:#00000010; border-radius:999px; overflow:hidden; }
+    .loadFill{ height:100%; width:0%; background: linear-gradient(90deg, #ff2d55, #8b5cf6); border-radius:999px; transition: width .25s ease; }
+
+    /* Floating emojis */
+    .float{ position:absolute; inset:0; pointer-events:none; opacity:.18; }
+    .float span{
+      position:absolute;
+      animation: drift linear infinite;
+      user-select:none;
+      will-change: transform;
+    }
+    @keyframes drift{
+      from{ transform: translateY(110vh) rotate(0deg); }
+      to  { transform: translateY(-20vh) rotate(360deg); }
+    }
+
+    .top{
+      display:flex; flex-wrap:wrap; gap:10px;
+      align-items:center; justify-content:space-between;
       margin-bottom:10px;
     }
     .pill{
@@ -51,53 +98,71 @@
       background:#0000000a;
       border:1px solid #00000014;
       user-select:none;
-    }
-    .title{
-      font-size: 34px;
-      margin: 8px 0 6px;
-      letter-spacing: -0.02em;
-    }
-    .subtitle{
-      font-size: 16px;
-      margin: 0 0 14px;
-      opacity:.85;
-    }
-    .typebox{
-      margin-top:14px;
-      background:#ffffff;
-      border:1px solid #00000012;
-      border-radius: 18px;
-      padding:16px 14px;
-      box-shadow: 0 8px 22px rgba(0,0,0,.07);
-    }
-    .typing{
-      font-size: 19px;
-      line-height: 1.35;
-      margin:0;
-      min-height: 54px;
-      white-space: pre-wrap;
-    }
-    .caret{
-      display:inline-block;
-      width: 10px;
-      margin-left:2px;
-      border-left: 2px solid #111;
-      height: 1em;
-      transform: translateY(2px);
-      animation: blink .9s infinite;
-    }
-    @keyframes blink { 50% { opacity:0; } }
-
-    .actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:14px;
+      white-space:nowrap;
+      display:inline-flex;
+      gap:8px;
       align-items:center;
     }
-    button{
+    .pill strong{ font-weight:900; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap:12px;
+    }
+    @media (max-width: 900px){ .grid{ grid-template-columns: 1fr; } }
+
+    .pane{
+      background:#fff;
+      border:1px solid #00000012;
+      border-radius:18px;
+      padding:14px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.06);
+    }
+    .title{
+      font-size:34px;
+      margin: 2px 0 6px;
+      letter-spacing:-0.02em;
+    }
+    .subtitle{
+      margin:0 0 10px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.35;
+    }
+
+    .bar{ height:10px; background:#00000010; border-radius:999px; overflow:hidden; }
+    .fill{ height:100%; width:0%; background: linear-gradient(90deg, #ff2d55, #8b5cf6); border-radius:999px; transition: width .35s ease; }
+    .hudRow{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:6px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .typingRow{ display:flex; gap:8px; align-items:flex-start; margin-top:12px; }
+    .typing{
+      margin:0;
+      min-height:74px;
+      white-space:pre-wrap;
       font-size:18px;
-      padding:12px 16px;
+      line-height:1.35;
+      flex:1;
+    }
+    .caret{
+      width:10px; height:1em;
+      border-left:2px solid #111;
+      transform: translateY(4px);
+      animation: blink .9s infinite;
+    }
+    @keyframes blink{ 50%{ opacity:0; } }
+
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+    button{
+      font-size:16px;
+      padding: 11px 14px;
       border:0;
       border-radius: 16px;
       cursor:pointer;
@@ -105,63 +170,100 @@
       user-select:none;
     }
     button:active{ transform: scale(.98); }
-    .primary{
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 12px 26px rgba(255,59,106,.25);
-    }
+    .primary{ background: var(--accent); color:#fff; box-shadow: 0 12px 26px rgba(255,45,85,.22); }
     .primary:hover{ filter: brightness(1.03); transform: translateY(-1px); }
-    .ghost{
-      background:#00000008;
-      border:1px solid #00000014;
-      color:#222;
-    }
+    .ghost{ background:#00000008; border:1px solid #00000014; color:#222; }
     .ghost:hover{ filter: brightness(1.03); transform: translateY(-1px); }
+    .danger{ background:#111; color:#fff; }
+    .ok{ background: #19c37d; color:#fff; }
 
-    .progress{
-      margin-left:auto;
-      font-size:13px;
-      opacity:.8;
-    }
-
-    .panel{
-      margin-top: 14px;
-      background:#ffffff;
-      border:1px solid #00000012;
-      border-radius: 18px;
-      padding:14px;
-      display:none;
-      box-shadow: 0 8px 22px rgba(0,0,0,.07);
-    }
+    .panel{ display:none; margin-top:12px; }
     .panel.show{ display:block; }
-    .q{
-      font-size:16px;
-      margin:0 0 10px;
-      font-weight:700;
-    }
-    .opts{
-      display:grid;
-      gap:8px;
-    }
+
+    .q{ font-weight:900; margin:0 0 8px; }
+    .opts{ display:grid; gap:8px; }
     .opt{
-      padding:12px 12px;
+      padding:12px;
       border-radius:14px;
       border:1px solid #00000014;
       background:#00000005;
       cursor:pointer;
-      transition: transform .14s ease, filter .14s ease, background .14s ease;
-      font-size:16px;
+      transition: transform .14s ease, filter .14s ease;
+      font-size:15px;
     }
     .opt:hover{ transform: translateY(-1px); filter: brightness(1.03); }
-    .opt.correct{
-      background:#19c37d1a;
-      border-color:#19c37d55;
+    .opt.good{ background: #19c37d16; border-color:#19c37d55; }
+    .opt.bad{ background: #ff2d5516; border-color:#ff2d5555; }
+
+    /* memory */
+    .memInfo{ color:var(--muted); font-size:14px; display:flex; gap:14px; flex-wrap:wrap; }
+    .memGrid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:10px; }
+    @media (max-width: 520px){ .memGrid{ grid-template-columns: repeat(3, 1fr); } }
+    .tile{
+      aspect-ratio: 1/1;
+      border-radius:16px;
+      border:1px solid #00000014;
+      background:#00000006;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .14s ease, filter .14s ease, background .14s ease;
+      position:relative;
     }
-    .opt.wrong{
-      background:#ff3b6a1a;
-      border-color:#ff3b6a55;
+    .tile:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+    .tile.revealed{ background:#fff; }
+    .tile.matched{ background:#19c37d16; border-color:#19c37d55; cursor:default; }
+
+    /* slider */
+    input[type="range"]{ width:100%; accent-color: var(--accent); }
+
+    /* certificate */
+    .cert{
+      margin-top:12px;
+      background: linear-gradient(135deg, #fff, #fff7f9);
+      border:1px solid #00000012;
+      border-radius:18px;
+      padding:14px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.06);
+      position:relative;
+      overflow:hidden;
+    }
+    .cert h2{ margin:0 0 6px; font-size:20px; }
+    .cert p{ margin:0; color:var(--muted); }
+    .stamp{
+      display:inline-block;
+      padding:8px 12px;
+      border:2px dashed var(--good);
+      border-radius: 14px;
+      color:#0f6b45;
+      font-weight:900;
+      transform: rotate(-6deg);
+      background:#19c37d14;
+      width: fit-content;
+      margin-top:10px;
+      animation: pop .6s ease both;
+    }
+    @keyframes pop{
+      from{ transform: translateY(8px) rotate(-10deg) scale(.9); opacity:.0; }
+      to{ transform: translateY(0) rotate(-6deg) scale(1); opacity:1; }
     }
 
+    .meter{
+      background:#00000008;
+      border:1px solid #00000012;
+      border-radius:14px;
+      padding:10px 12px;
+      display:grid;
+      gap:6px;
+      margin-top:10px;
+    }
+    .mbar{ height:10px; background:#00000012; border-radius:999px; overflow:hidden; }
+    .mfill{ height:100%; width:0%; background: linear-gradient(90deg, #ff2d55, #8b5cf6); border-radius:999px; transition: width .6s ease; }
+
+    /* achievement + toast */
     .toast{
       position: fixed;
       left:50%;
@@ -176,255 +278,247 @@
       opacity:0;
       pointer-events:none;
       transition: opacity .2s ease, transform .2s ease;
+      z-index: 99999;
     }
-    .toast.show{
-      opacity:1;
-      transform: translateX(-50%) translateY(-4px);
-    }
+    .toast.show{ opacity:1; transform: translateX(-50%) translateY(-4px); }
 
-    .scan{
-      display:none;
-      margin-top: 14px;
-      background:#0b0b10;
-      color:#d6d6ff;
-      border-radius: 18px;
-      padding: 14px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 14px;
-      border:1px solid #ffffff1a;
-      box-shadow: 0 10px 26px rgba(0,0,0,.2);
-    }
-    .scan.show{ display:block; }
-    .bar{
-      height: 10px;
-      background: #ffffff14;
-      border-radius: 999px;
-      overflow:hidden;
-      margin-top:10px;
-    }
-    .fill{
-      height:100%;
-      width:0%;
-      background: linear-gradient(90deg, #8b5cf6, #ff3b6a);
-      border-radius: 999px;
-      transition: width .25s ease;
-    }
-
-    /* floating hearts background */
-    .float{
-      position:absolute;
-      inset:0;
+    .ach{
+      position: fixed;
+      right: 18px;
+      top: 18px;
+      width: min(320px, 90vw);
+      background:#ffffff;
+      border:1px solid #00000012;
+      border-radius:18px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.18);
+      padding:12px;
+      transform: translateY(-10px);
+      opacity:0;
       pointer-events:none;
-      opacity:.22;
-      filter: blur(.2px);
+      transition: opacity .25s ease, transform .25s ease;
+      z-index: 99998;
     }
-    .float span{
-      position:absolute;
-      font-size: 26px;
-      animation: drift linear infinite;
-    }
-    @keyframes drift{
-      from{ transform: translateY(110vh) rotate(0deg); }
-      to  { transform: translateY(-20vh) rotate(360deg); }
-    }
+    .ach.show{ opacity:1; transform: translateY(0); }
+    .achTitle{ font-weight:900; margin:0 0 4px; }
+    .achText{ margin:0; color:var(--muted); font-size:14px; line-height:1.35; }
+
+    .sideTitle{ font-weight:900; margin:0 0 8px; }
+    .sideList{ margin:0; padding-left:16px; color:var(--muted); font-size:14px; line-height:1.45; }
+    .kv{ display:grid; grid-template-columns: 1fr auto; gap:6px 10px; margin-top:10px; font-size:14px; color:var(--muted); }
+    .kv b{ color:#222; }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <div class="card">
+    <div class="card" id="app">
       <div class="float" id="float"></div>
 
-      <div class="topbar">
-        <div class="pill">📞 Official Valentine Hotline</div>
-        <div class="pill" id="statusPill">Status: pending approval</div>
+      <div class="top">
+        <div class="pill">🎮 Valentine Quest</div>
+        <div class="pill">Player: <strong>Aila</strong></div>
+        <div class="pill">Level: <strong id="lvl">1</strong></div>
+        <div class="pill">XP: <strong id="xp">0</strong></div>
+        <div class="pill">Streak: <strong id="streak">0</strong> 🔥</div>
       </div>
 
-      <h1 class="title">Aila 😌</h1>
-      <p class="subtitle">Please do not panic. This is a friendly audit of your Valentine availability.</p>
+      <div class="grid">
+        <!-- MAIN -->
+        <div class="pane">
+          <div class="title">Aila 💖</div>
+          <p class="subtitle">
+            Beat the mini-games to unlock the certificate.
+            (Made with dangerously high effort by <b>Abhiraj</b>.)
+          </p>
 
-      <div class="typebox">
-        <p class="typing" id="typing"></p><span class="caret"></span>
-      </div>
+          <div class="bar"><div class="fill" id="progressFill"></div></div>
+          <div class="hudRow">
+            <span id="stepText">Step 0 / 3</span>
+            <span id="timerText">Timer: —</span>
+          </div>
 
-      <div class="actions">
-        <button class="primary" id="btnProceed">Proceed (very serious)</button>
-        <button class="ghost" id="btnSkip">Skip to “obviously yes”</button>
-        <div class="progress" id="progress">Step 1 / 4</div>
-      </div>
+          <div class="typingRow">
+            <p class="typing" id="typing"></p><span class="caret" aria-hidden="true"></span>
+          </div>
 
-      <div class="scan" id="scan">
-        <div id="scanText">Initializing romance protocol…</div>
-        <div class="bar"><div class="fill" id="fill"></div></div>
-      </div>
+          <div class="actions">
+            <button class="primary" id="btnStart">Start Quest 🚀</button>
+            <button class="ghost" id="btnHint">Hint</button>
+            <button class="ghost" id="btnSound">Sound: Off</button>
+            <button class="danger" id="btnReset">Reset</button>
+          </div>
 
-      <div class="panel" id="quiz">
-        <div class="q" id="qText">Question</div>
-        <div class="opts" id="opts"></div>
-      </div>
+          <!-- QUIZ -->
+          <div class="panel" id="pQuiz">
+            <p class="q" id="qText">Question</p>
+            <div class="opts" id="opts"></div>
+          </div>
 
-      <div class="panel" id="final">
-        <div class="q">✅ Result: You passed (with distinction)</div>
-        <div style="font-size:18px; line-height:1.4;">
-          Therefore, by the ancient laws of romance, you are now officially my Valentine. 💖<br><br>
-          Next steps:
-          <ul style="margin:10px 0 0; padding-left:18px;">
-            <li>Dinner 🍝 (required)</li>
-            <li>Dessert 🍰 (non-negotiable)</li>
-            <li>Unreasonably cute photos 📸</li>
-          </ul>
+          <!-- MEMORY -->
+          <div class="panel" id="pMemory">
+            <p class="q">Mini-game: Memory Match 🧠</p>
+            <div class="memInfo">
+              <span>Moves left: <b id="movesLeft">10</b></span>
+              <span>Best streak: <b id="bestStreak">0</b></span>
+            </div>
+            <div class="memGrid" id="memGrid"></div>
+          </div>
+
+          <!-- SLIDER -->
+          <div class="panel" id="pSlider">
+            <p class="q">Final lock: “Yes Energy” Calibration 🔒</p>
+            <div class="memInfo" id="lieText">Slide to <b>90%</b>+ to unlock. (Lie detector: armed.)</div>
+            <div style="margin-top:10px;">
+              <input id="yesSlider" type="range" min="0" max="100" value="8" />
+              <div class="hudRow"><span>meh</span><span>YES</span></div>
+            </div>
+            <div class="actions" style="margin-top:10px;">
+              <button class="primary" id="btnUnlock" disabled>Unlock ✅</button>
+            </div>
+          </div>
+
+          <!-- FINAL -->
+          <div class="panel" id="pFinal">
+            <p class="q">🏆 Certificate Unlocked</p>
+
+            <div class="cert" id="cert">
+              <h2>Official Valentine Certificate</h2>
+              <p>Issued to: <b>Aila</b></p>
+              <p>Issued by: <b>Abhiraj</b></p>
+              <div class="stamp">✅ MATCH FOUND: AILA + ABHIRAJ</div>
+
+              <div class="meter">
+                <div><b>Yes Energy</b>: <span id="mYes">loading…</span></div>
+                <div class="mbar"><div class="mfill" id="bYes"></div></div>
+              </div>
+              <div class="meter">
+                <div><b>Laugh Compatibility</b>: <span id="mLaugh">loading…</span></div>
+                <div class="mbar"><div class="mfill" id="bLaugh"></div></div>
+              </div>
+              <div class="meter">
+                <div><b>Dessert Agreement</b>: <span id="mDessert">loading…</span></div>
+                <div class="mbar"><div class="mfill" id="bDessert"></div></div>
+              </div>
+              <div class="meter">
+                <div><b>Probability of Cute Date</b>: <span id="mCute">loading…</span></div>
+                <div class="mbar"><div class="mfill" id="bCute"></div></div>
+              </div>
+
+              <div style="margin-top:10px; color:var(--muted); font-size:14px;">
+                Rewards unlocked: 🍝 dinner + 🍰 dessert + 📸 cute photos
+              </div>
+            </div>
+
+            <div class="actions" style="margin-top:12px;">
+              <button class="ok" id="btnHearts">Confirm 💖</button>
+              <button class="ghost" id="btnCopy">Copy message</button>
+              <button class="ghost" id="btnDownload">Download certificate</button>
+            </div>
+          </div>
         </div>
-        <div class="actions" style="margin-top:12px;">
-          <button class="primary" id="btnConfetti">Confirm (send hearts)</button>
-          <button class="ghost" id="btnCopy">Copy a message to send</button>
+
+        <!-- SIDE -->
+        <div class="pane">
+          <div class="sideTitle">Quest Checklist</div>
+          <ul class="sideList">
+            <li>✨ Preloader “romance engine”</li>
+            <li>🎯 Timed quiz + streak bonus</li>
+            <li>🧠 Memory match (6 pairs)</li>
+            <li>🔒 Yes-energy lock (90%+)</li>
+            <li>🏆 Certificate + download button</li>
+          </ul>
+
+          <div class="kv">
+            <b>Goal</b><span>Unlock certificate</span>
+            <b>Cheese</b><span>High 🧀</span>
+            <b>Vibes</b><span>Immaculate ✨</span>
+            <b>No button</b><span>Deleted ✅</span>
+          </div>
+
+          <div style="margin-top:12px; color:var(--muted); font-size:14px; line-height:1.45;">
+            Send the link with: <b>“Aila, I made you a game.”</b>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="toast" id="toast">Copied ✅</div>
+  <!-- preloader -->
+  <div class="overlay" id="overlay">
+    <div class="loaderCard">
+      <div class="loaderTitle">Loading Romance Engine…</div>
+      <p class="loaderText" id="loadText">Initializing butterflies…</p>
+      <div class="loadBar"><div class="loadFill" id="loadFill"></div></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">OK</div>
+  <div class="ach" id="ach">
+    <div class="achTitle" id="achTitle">Achievement Unlocked</div>
+    <p class="achText" id="achText">Text</p>
+  </div>
 
   <script>
-    // ===== floating hearts background =====
+    // Helpers
+    const $ = (id)=>document.getElementById(id);
+    const toastEl = $("toast");
+    let toastTimer;
+    function toast(msg){
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=>toastEl.classList.remove("show"), 1100);
+    }
+
+    const achEl = $("ach");
+    let achTimer;
+    function achievement(title, text){
+      $("achTitle").textContent = title;
+      $("achText").textContent = text;
+      achEl.classList.add("show");
+      clearTimeout(achTimer);
+      achTimer = setTimeout(()=>achEl.classList.remove("show"), 2200);
+    }
+
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+    // Floating emojis
     (function makeFloat(){
-      const f = document.getElementById("float");
-      const emojis = ["💖","💗","💘","💞","🌹","✨"];
-      for(let i=0;i<18;i++){
+      const f = $("float");
+      const emojis = ["💖","💗","💘","💞","🌹","✨","🍓","🎀"];
+      for(let i=0;i<22;i++){
         const s=document.createElement("span");
         s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-        s.style.left = (Math.random()*100)+"%";
-        s.style.animationDuration = (10 + Math.random()*12) + "s";
-        s.style.animationDelay = (-Math.random()*20) + "s";
-        s.style.fontSize = (18 + Math.random()*20) + "px";
+        s.style.left = (Math.random()*100) + "%";
+        s.style.animationDuration = (10 + Math.random()*14) + "s";
+        s.style.animationDelay = (-Math.random()*18) + "s";
+        s.style.fontSize = (18 + Math.random()*22) + "px";
         f.appendChild(s);
       }
     })();
 
-    // ===== typewriter =====
-    const typingEl = document.getElementById("typing");
-    const statusPill = document.getElementById("statusPill");
-    const progressEl = document.getElementById("progress");
-
-    const scriptLines = [
-      "Hello Aila.\nThis is an automated message from the Valentine Department.",
-      "We have detected an unusually high level of cuteness in your vicinity.",
-      "To continue, please complete the Mandatory Valentine Verification™.",
-      "Warning: choosing 'yes' may lead to dinner, dessert, and smiling a lot."
-    ];
-
-    let lineIdx = 0;
-    function typeLine(text, cb){
-      typingEl.textContent = "";
-      let i=0;
-      const speed = 18 + Math.random()*10;
-      const t = setInterval(()=>{
-        typingEl.textContent += text[i++] || "";
-        if(i > text.length){
-          clearInterval(t);
-          cb && cb();
-        }
-      }, speed);
+    // Optional sound
+    let soundOn = false;
+    let audioCtx = null;
+    function beep(freq=660, ms=70, type="sine"){
+      if(!soundOn) return;
+      try{
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = type;
+        o.frequency.value = freq;
+        g.gain.value = 0.045;
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start();
+        setTimeout(()=>o.stop(), ms);
+      } catch(e){}
     }
+    function successSound(){ beep(784, 80, "triangle"); setTimeout(()=>beep(988, 90, "triangle"), 90); }
+    function failSound(){ beep(220, 120, "sawtooth"); }
 
-    function playTyping(){
-      progressEl.textContent = "Step 1 / 4";
-      statusPill.textContent = "Status: assessing vibes";
-      typeLine(scriptLines[0], ()=>{});
-    }
-    playTyping();
-
-    // ===== fake scan =====
-    const scan = document.getElementById("scan");
-    const scanText = document.getElementById("scanText");
-    const fill = document.getElementById("fill");
-
-    function runScan(cb){
-      scan.classList.add("show");
-      const steps = [
-        ["Checking calendar…", 22],
-        ["Checking snack preferences…", 48],
-        ["Checking tolerance for cheesy jokes…", 71],
-        ["Searching for other options…", 88],
-        ["Other options found: 0 ✅", 100]
-      ];
-      let k=0;
-      fill.style.width = "0%";
-      const timer = setInterval(()=>{
-        scanText.textContent = steps[k][0];
-        fill.style.width = steps[k][1] + "%";
-        k++;
-        if(k >= steps.length){
-          clearInterval(timer);
-          setTimeout(()=>{
-            cb && cb();
-          }, 500);
-        }
-      }, 650);
-    }
-
-    // ===== quiz =====
-    const quizPanel = document.getElementById("quiz");
-    const qText = document.getElementById("qText");
-    const opts = document.getElementById("opts");
-    const finalPanel = document.getElementById("final");
-
-    const quiz = [
-      {
-        q: "1) Choose the correct answer:",
-        a: 0,
-        o: ["Yes, obviously 💖", "Maybe?", "I need to consult my lawyer"]
-      },
-      {
-        q: "2) Pick your Valentine difficulty level:",
-        a: 1,
-        o: ["Hard mode (awkward eye contact)", "Easy mode (cute date + laughs)", "Expert mode (I bring flowers AND puns)"]
-      },
-      {
-        q: "3) Final confirmation:",
-        a: 2,
-        o: ["I accept but only for dessert", "I accept but only for dinner", "I accept (and also dessert) 🍰"]
-      }
-    ];
-
-    let qIdx = 0;
-    function showQuizQuestion(){
-      quizPanel.classList.add("show");
-      finalPanel.classList.remove("show");
-      opts.innerHTML = "";
-      const item = quiz[qIdx];
-      qText.textContent = item.q;
-
-      item.o.forEach((label, i)=>{
-        const b = document.createElement("div");
-        b.className = "opt";
-        b.textContent = label;
-        b.onclick = () => {
-          if(i === item.a){
-            b.classList.add("correct");
-            toast("Correct ✅");
-            setTimeout(()=>{
-              qIdx++;
-              if(qIdx >= quiz.length){
-                quizPanel.classList.remove("show");
-                finalPanel.classList.add("show");
-                statusPill.textContent = "Status: approved ✅";
-                progressEl.textContent = "Step 4 / 4";
-                heartsBurst(28);
-              } else {
-                showQuizQuestion();
-              }
-            }, 450);
-          } else {
-            b.classList.add("wrong");
-            toast("Nice try 😄 (pick the correct one)");
-            setTimeout(()=> b.classList.remove("wrong"), 650);
-          }
-        };
-        opts.appendChild(b);
-      });
-    }
-
-    // ===== confetti hearts =====
-    function heartsBurst(n=22){
+    // Hearts confetti
+    function heartsBurst(n=24){
       for(let i=0;i<n;i++){
         const s=document.createElement("span");
         s.textContent = ["💖","💗","💘","💞","✨"][Math.floor(Math.random()*5)];
@@ -443,85 +537,501 @@
       }
     }
 
-    // ===== toast =====
-    const toastEl = document.getElementById("toast");
-    let toastTimer;
-    function toast(msg){
-      toastEl.textContent = msg;
-      toastEl.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(()=> toastEl.classList.remove("show"), 1100);
+    // Typewriter
+    const typingEl = $("typing");
+    let typingTimer = null;
+    function typeLine(text, cb){
+      clearInterval(typingTimer);
+      typingEl.textContent = "";
+      let i=0;
+      const speed = 14 + Math.random()*10;
+      typingTimer = setInterval(()=>{
+        typingEl.textContent += text[i] ?? "";
+        i++;
+        if(i > text.length){
+          clearInterval(typingTimer);
+          cb && cb();
+        }
+      }, speed);
     }
 
-    // ===== button flow =====
-    const btnProceed = document.getElementById("btnProceed");
-    const btnSkip = document.getElementById("btnSkip");
+    // Panels
+    function showPanel(id){
+      ["pQuiz","pMemory","pSlider","pFinal"].forEach(pid => $(pid).classList.remove("show"));
+      if(id) $(id).classList.add("show");
+    }
 
-    btnProceed.onclick = () => {
-      lineIdx++;
-      if(lineIdx === 1){
-        progressEl.textContent = "Step 2 / 4";
-        statusPill.textContent = "Status: verifying cuteness";
-        typeLine(scriptLines[1]);
-      } else if(lineIdx === 2){
-        progressEl.textContent = "Step 3 / 4";
-        statusPill.textContent = "Status: running checks";
-        typeLine(scriptLines[2], ()=>{
-          runScan(()=>{
-            scanText.textContent = "Scan complete ✅";
-            setTimeout(()=>{
-              showQuizQuestion();
-            }, 350);
-          });
-        });
-      } else if(lineIdx >= 3){
-        typeLine(scriptLines[3]);
-        heartsBurst(18);
+    // HUD
+    let step = 0; // 0 idle, 1 quiz, 2 memory, 3 slider, 4 final
+    let xp = 0, lvl = 1, streak = 0, bestStreak = 0;
+
+    function setHUD(){
+      $("xp").textContent = xp;
+      $("lvl").textContent = lvl;
+      $("streak").textContent = streak;
+      $("bestStreak").textContent = bestStreak;
+
+      const stepText = {0:"Step 0 / 3", 1:"Step 1 / 3", 2:"Step 2 / 3", 3:"Step 3 / 3", 4:"Completed ✅"};
+      $("stepText").textContent = stepText[step] || "—";
+
+      const pct = step === 0 ? 0 : (step >= 4 ? 100 : Math.round((step/3)*100));
+      $("progressFill").style.width = pct + "%";
+    }
+
+    function addXP(n){
+      xp += n;
+      const newLvl = 1 + Math.floor(xp / 140);
+      if(newLvl > lvl){
+        lvl = newLvl;
+        achievement("Level Up 🎉", `Level ${lvl} unlocked. Yes energy increasing.`);
+        heartsBurst(10);
+        successSound();
       }
-    };
+      setHUD();
+    }
 
-    btnSkip.onclick = () => {
-      progressEl.textContent = "Fast track engaged ⚡";
-      statusPill.textContent = "Status: skipping to approval";
-      runScan(()=>{
-        qIdx = 0;
-        showQuizQuestion();
+    function bumpStreak(ok){
+      streak = ok ? (streak + 1) : 0;
+      if(streak > bestStreak) bestStreak = streak;
+      setHUD();
+    }
+
+    // Timer (quiz)
+    let timer = null;
+    let timeLeft = 0;
+    function stopTimer(){
+      clearInterval(timer);
+      $("timerText").textContent = "Timer: —";
+    }
+    function startTimer(seconds, onFail){
+      clearInterval(timer);
+      timeLeft = seconds;
+      $("timerText").textContent = `Timer: ${timeLeft}s`;
+      timer = setInterval(()=>{
+        timeLeft--;
+        $("timerText").textContent = `Timer: ${timeLeft}s`;
+        if(timeLeft <= 0){
+          clearInterval(timer);
+          $("timerText").textContent = "Timer: 0s";
+          onFail && onFail();
+        }
+      }, 1000);
+    }
+
+    // QUIZ
+    const quiz = [
+      { q: "1) Confirm the correct response:", a: 0, o: ["Yes, obviously 💖", "Maybe", "I need to consult my lawyer"] },
+      { q: "2) Pick a date difficulty:", a: 1, o: ["Hard mode (awkward eye contact)", "Easy mode (cute date + laughs)", "Expert mode (flowers + puns)"] },
+      { q: "3) Select the best reward:", a: 2, o: ["Only dinner", "Only dessert", "Dinner + dessert 🍰"] }
+    ];
+    let qIdx = 0;
+
+    function renderQuiz(){
+      showPanel("pQuiz");
+      const q = quiz[qIdx];
+      $("qText").textContent = q.q;
+      const opts = $("opts");
+      opts.innerHTML = "";
+
+      q.o.forEach((label, i)=>{
+        const b = document.createElement("div");
+        b.className = "opt";
+        b.textContent = label;
+        b.onclick = ()=>{
+          if(i === q.a){
+            b.classList.add("good");
+            stopTimer();
+            bumpStreak(true);
+            addXP(45 + Math.min(streak,5)*6);
+            toast("Correct ✅");
+            successSound();
+            if(qIdx === 2 && streak >= 3){
+              achievement("Perfect Streak 🔥", "Quiz cleared with a streak. Respect.");
+              addXP(25);
+            }
+            setTimeout(()=>{
+              qIdx++;
+              if(qIdx >= quiz.length){
+                goToMemory();
+              } else {
+                renderQuiz();
+              }
+            }, 350);
+          } else {
+            b.classList.add("bad");
+            bumpStreak(false);
+            addXP(5);
+            toast("Nice try 😄");
+            failSound();
+            setTimeout(()=> b.classList.remove("bad"), 650);
+          }
+        };
+        opts.appendChild(b);
       });
-    };
 
-    // ===== final actions =====
-    document.getElementById("btnConfetti").onclick = () => {
-      heartsBurst(40);
-      toast("Valentine confirmed 💖");
-    };
+      startTimer(12, ()=>{
+        bumpStreak(false);
+        failSound();
+        toast("Time! 😄 Try again.");
+        renderQuiz();
+      });
+    }
 
-    document.getElementById("btnCopy").onclick = async () => {
+    function goToQuiz(){
+      step = 1;
+      setHUD();
+      typeLine("Mini-game 1: Timed Quiz 🎯\nAnswer all 3 questions to continue.\n\n(Your streak is being judged.)");
+      qIdx = 0;
+      renderQuiz();
+    }
+
+    // MEMORY
+    const memEmojis = ["💖","🍓","✨","🌹","💘","🎀"];
+    let memDeck = [];
+    let firstPick = null;
+    let lock = false;
+    let matched = 0;
+    let movesLeft = 10;
+
+    function shuffle(arr){
+      for(let i=arr.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]] = [arr[j],arr[i]];
+      }
+      return arr;
+    }
+
+    function setupMemory(){
+      showPanel("pMemory");
+      stopTimer();
+      matched = 0;
+      firstPick = null;
+      lock = false;
+      movesLeft = 10;
+      $("movesLeft").textContent = movesLeft;
+
+      memDeck = shuffle([...memEmojis, ...memEmojis]);
+      const grid = $("memGrid");
+      grid.innerHTML = "";
+
+      memDeck.forEach((emoji)=>{
+        const t = document.createElement("div");
+        t.className = "tile";
+        t.dataset.emoji = emoji;
+        t.dataset.state = "hidden";
+        t.textContent = "❓";
+        t.onclick = ()=> onTileClick(t);
+        grid.appendChild(t);
+      });
+    }
+
+    function reveal(tile){
+      tile.classList.add("revealed");
+      tile.textContent = tile.dataset.emoji;
+      tile.dataset.state = "revealed";
+    }
+    function hide(tile){
+      tile.classList.remove("revealed");
+      tile.textContent = "❓";
+      tile.dataset.state = "hidden";
+    }
+    function markMatched(a,b){
+      a.classList.remove("revealed");
+      b.classList.remove("revealed");
+      a.classList.add("matched");
+      b.classList.add("matched");
+      a.dataset.state = "matched";
+      b.dataset.state = "matched";
+    }
+
+    function onTileClick(tile){
+      if(lock) return;
+      if(tile.dataset.state !== "hidden") return;
+
+      reveal(tile);
+      beep(660, 45, "sine");
+
+      if(!firstPick){ firstPick = tile; return; }
+
+      movesLeft--;
+      $("movesLeft").textContent = movesLeft;
+
+      const a = firstPick;
+      const b = tile;
+      firstPick = null;
+
+      if(a.dataset.emoji === b.dataset.emoji){
+        lock = true;
+        setTimeout(()=>{
+          markMatched(a,b);
+          matched++;
+          lock = false;
+          bumpStreak(true);
+          addXP(30 + Math.min(streak,6)*4);
+          toast("Match ✅");
+          successSound();
+          if(matched === memEmojis.length){
+            achievement("Memory Master 🧠", "All pairs matched. Impressive.");
+            heartsBurst(18);
+            goToSlider();
+          }
+        }, 220);
+      } else {
+        lock = true;
+        setTimeout(()=>{
+          hide(a); hide(b);
+          lock = false;
+          bumpStreak(false);
+          addXP(4);
+          failSound();
+          toast("Nope 😄");
+          if(movesLeft <= 0){
+            achievement("Plot Twist 😄", "Out of moves. Restarting memory game.");
+            setupMemory();
+          }
+        }, 520);
+      }
+    }
+
+    function goToMemory(){
+      step = 2;
+      setHUD();
+      typeLine("Mini-game 2: Memory Match 🧠\nMatch all pairs within 10 moves.\n\nYes, it’s serious.");
+      setupMemory();
+    }
+
+    // SLIDER
+    function goToSlider(){
+      step = 3;
+      setHUD();
+      showPanel("pSlider");
+      stopTimer();
+      typeLine("Mini-game 3: Yes Energy Calibration 🔒\nSlide to 90%+ to unlock.\n\nLie detector: armed. 👀");
+
+      const slider = $("yesSlider");
+      const btn = $("btnUnlock");
+      const lieText = $("lieText");
+      slider.value = 8;
+      btn.disabled = true;
+
+      slider.oninput = ()=>{
+        const v = Number(slider.value);
+        if(v < 40) lieText.innerHTML = "Current reading: <b>denial</b>. (Cute.)";
+        else if(v < 70) lieText.innerHTML = "Current reading: <b>maybe</b>. We can work with this.";
+        else if(v < 90) lieText.innerHTML = "Current reading: <b>almost yes</b>. Slide a little more 😄";
+        else lieText.innerHTML = "✅ Verified: <b>YES ENERGY DETECTED</b>.";
+
+        if(v >= 90){
+          btn.disabled = false;
+          toast("✅ Verified.");
+          successSound();
+        } else {
+          btn.disabled = true;
+        }
+      };
+
+      btn.onclick = ()=>{
+        addXP(90);
+        achievement("Lock Cracked 🔓", "Certificate unlocked.");
+        heartsBurst(24);
+        goToFinal();
+      };
+    }
+
+    // FINAL
+    function animateMeters(){
+      const items = [
+        ["bYes","mYes", 95, 100, 160],
+        ["bLaugh","mLaugh", 88, 99, 360],
+        ["bDessert","mDessert", 97, 100, 560],
+        ["bCute","mCute", 92, 100, 760]
+      ];
+      items.forEach(([bar,label,min,max,delay])=>{
+        setTimeout(()=>{
+          const v = rand(min,max);
+          $(label).textContent = v + "%";
+          requestAnimationFrame(()=> $(bar).style.width = v + "%");
+        }, delay);
+      });
+      setTimeout(()=>toast("✅ Match certified"), 940);
+    }
+
+    function goToFinal(){
+      step = 4;
+      setHUD();
+      showPanel("pFinal");
+      stopTimer();
+      typeLine("Quest complete.\nAila, you passed with distinction.\n\nAbhiraj is requesting a date. 💖");
+      animateMeters();
+    }
+
+    // Copy message
+    async function copyMessage(){
       const msg =
 `Aila 💖
 
-Urgent update from the Valentine Department:
-You have been officially selected as my Valentine.
+I made you a little Valentine Quest and you completed it.
+So… will you be my Valentine?
 
-Next steps:
+— Abhiraj
+
+Rewards unlocked:
 🍝 Dinner
 🍰 Dessert
 ✨ Being ridiculously cute together
 
-So… what day are you free? 😄`;
+When are you free? 😄`;
       try{
         await navigator.clipboard.writeText(msg);
         toast("Copied ✅");
+        successSound();
       } catch(e){
-        // fallback for older browsers
-        const t = document.createElement("textarea");
-        t.value = msg;
+        const t=document.createElement("textarea");
+        t.value=msg;
         document.body.appendChild(t);
         t.select();
         document.execCommand("copy");
         t.remove();
         toast("Copied ✅");
       }
+    }
+
+    // Download certificate as PNG (screenshot)
+    async function downloadCertificate(){
+      const node = $("cert");
+      // Use SVG foreignObject trick (works well for simple DOM)
+      const rect = node.getBoundingClientRect();
+      const width = Math.ceil(rect.width);
+      const height = Math.ceil(rect.height);
+
+      const cloned = node.cloneNode(true);
+      cloned.style.margin = "0";
+      cloned.style.boxShadow = "none";
+
+      const wrapper = document.createElement("div");
+      wrapper.style.width = width + "px";
+      wrapper.style.height = height + "px";
+      wrapper.style.background = "#fff";
+      wrapper.style.padding = "12px";
+      wrapper.appendChild(cloned);
+
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width+24}" height="${height+24}">
+          <foreignObject width="100%" height="100%">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
+              ${wrapper.innerHTML}
+            </div>
+          </foreignObject>
+        </svg>`;
+
+      const blob = new Blob([svg], {type:"image/svg+xml;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = width+24;
+        canvas.height = height+24;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img,0,0);
+        URL.revokeObjectURL(url);
+
+        canvas.toBlob((png)=>{
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(png);
+          a.download = "Aila-Abhiraj-Valentine-Certificate.png";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(()=> URL.revokeObjectURL(a.href), 1000);
+          toast("Downloaded ✅");
+          achievement("Souvenir 📸", "Certificate saved as PNG.");
+        }, "image/png");
+      };
+      img.onerror = () => {
+        toast("Download not supported here 😅");
+      };
+      img.src = url;
+    }
+
+    // Preloader
+    (function runLoader(){
+      const overlay = $("overlay");
+      const loadFill = $("loadFill");
+      const loadText = $("loadText");
+      const steps = [
+        "Initializing butterflies…",
+        "Calibrating yes energy…",
+        "Warming up cheesy jokes…",
+        "Loading mini-games…",
+        "Ready ✅"
+      ];
+      let p = 0;
+      const t = setInterval(()=>{
+        loadText.textContent = steps[Math.min(p, steps.length-1)];
+        loadFill.style.width = (p*25) + "%";
+        p++;
+        if(p > 4){
+          clearInterval(t);
+          setTimeout(()=> overlay.classList.add("hide"), 350);
+        }
+      }, 420);
+    })();
+
+    // Buttons
+    $("btnStart").onclick = ()=>{
+      goToQuiz();
+      $("btnStart").textContent = "Quest Running ✅";
+      $("btnStart").disabled = true;
+      achievement("Quest Started 🚀", "Aila entered the arena.");
     };
+
+    $("btnHint").onclick = ()=>{
+      const hints = {
+        0: "Hint: Press Start 😄",
+        1: "Hint: The correct option is the one with ‘Yes energy’.",
+        2: "Hint: Try remembering corners first.",
+        3: "Hint: 90%+. We’re watching 👀",
+        4: "Hint: Download the certificate & send it 😄"
+      };
+      toast(hints[step] || "Hint: You’re doing great 😄");
+      beep(523, 70, "triangle");
+    };
+
+    $("btnSound").onclick = ()=>{
+      soundOn = !soundOn;
+      $("btnSound").textContent = `Sound: ${soundOn ? "On" : "Off"}`;
+      toast(soundOn ? "Sound on 🔊" : "Sound off 🔇");
+      if(soundOn) successSound();
+    };
+
+    $("btnReset").onclick = ()=>{
+      step = 0; xp = 0; lvl = 1; streak = 0; bestStreak = 0;
+      setHUD();
+      stopTimer();
+      showPanel(null);
+      $("btnStart").disabled = false;
+      $("btnStart").textContent = "Start Quest 🚀";
+      typeLine("Reset complete.\nAila has been granted a fresh run. Use it wisely. 😄");
+      toast("Reset ✅");
+      achievement("Reset 🧼", "Clean slate. New run begins.");
+    };
+
+    $("btnHearts").onclick = ()=>{
+      heartsBurst(40);
+      toast("Valentine confirmed 💖");
+      successSound();
+      achievement("Confirmed 💘", "Match approved by the universe.");
+    };
+
+    $("btnCopy").onclick = copyMessage;
+    $("btnDownload").onclick = downloadCertificate;
+
+    // Start text
+    setHUD();
+    typeLine("Loading Valentine Quest…\nAila, your mission starts when you press Start. 💘");
   </script>
 </body>
 </html>
