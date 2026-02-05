@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aila — Valentine Quest</title>
+  <title>Aila + Abhiraj — 1 Month Anniversary</title>
   <style>
     :root{
-      --bg1:#ff2d55;
-      --bg2:#ffb3c1;
+      --bg1:#7c3aed;
+      --bg2:#ff2d55;
       --bg3:#ffd6e0;
       --card:#ffffffee;
       --ink:#141417;
@@ -16,7 +16,7 @@
       --good:#19c37d;
       --warn:#ff9500;
       --shadow: 0 18px 55px rgba(0,0,0,.22);
-      --radius: 22px;
+      --r: 22px;
     }
     *{ box-sizing:border-box; }
     body{
@@ -26,61 +26,28 @@
         radial-gradient(900px 700px at 18% 18%, var(--bg3) 0%, transparent 60%),
         linear-gradient(135deg, var(--bg1), var(--bg2));
       min-height:100vh;
+      overflow:auto;
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:center;
+      padding: 16px 0;
       color:var(--ink);
-      overflow:hidden;
     }
-    .wrap{ width:min(980px, 94vw); }
-
+    .wrap{ width:min(1040px, 94vw); }
     .card{
       background:var(--card);
-      border-radius:var(--radius);
+      border-radius:var(--r);
       box-shadow:var(--shadow);
-      padding: 18px;
-      position:relative;
-      overflow:hidden;
-      backdrop-filter: blur(7px);
-    }
-
-    /* Preloader overlay */
-    .overlay{
-      position:absolute; inset:0;
-      background: linear-gradient(135deg, rgba(255,45,85,.88), rgba(255,179,193,.88));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index:9999;
-      transition: opacity .35s ease, transform .35s ease;
-    }
-    .overlay.hide{
-      opacity:0;
-      transform: scale(1.02);
-      pointer-events:none;
-    }
-    .loaderCard{
-      width:min(520px, 92vw);
-      background:#ffffffee;
-      border-radius:22px;
-      border:1px solid #00000012;
-      box-shadow: 0 18px 55px rgba(0,0,0,.25);
       padding:18px;
-      text-align:center;
+      position:relative;
+      overflow:auto;
+      backdrop-filter: blur(7px);
+      max-height: calc(100vh - 32px);
     }
-    .loaderTitle{ font-size:22px; font-weight:900; margin:4px 0 10px; }
-    .loaderText{ color:var(--muted); margin:0 0 12px; font-size:14px; }
-    .loadBar{ height:10px; background:#00000010; border-radius:999px; overflow:hidden; }
-    .loadFill{ height:100%; width:0%; background: linear-gradient(90deg, #ff2d55, #8b5cf6); border-radius:999px; transition: width .25s ease; }
 
-    /* Floating emojis */
-    .float{ position:absolute; inset:0; pointer-events:none; opacity:.18; }
-    .float span{
-      position:absolute;
-      animation: drift linear infinite;
-      user-select:none;
-      will-change: transform;
-    }
+    /* floating background */
+    .float{ position:absolute; inset:0; pointer-events:none; opacity:.16; }
+    .float span{ position:absolute; animation: drift linear infinite; user-select:none; will-change:transform; }
     @keyframes drift{
       from{ transform: translateY(110vh) rotate(0deg); }
       to  { transform: translateY(-20vh) rotate(360deg); }
@@ -90,27 +57,23 @@
       display:flex; flex-wrap:wrap; gap:10px;
       align-items:center; justify-content:space-between;
       margin-bottom:10px;
+      position:relative; z-index:2;
     }
     .pill{
-      font-size:12px;
-      padding:6px 10px;
-      border-radius:999px;
-      background:#0000000a;
-      border:1px solid #00000014;
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      background:#0000000a; border:1px solid #00000014;
+      white-space:nowrap; display:inline-flex; gap:8px; align-items:center;
       user-select:none;
-      white-space:nowrap;
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
     }
     .pill strong{ font-weight:900; }
 
     .grid{
       display:grid;
-      grid-template-columns: 1.25fr .75fr;
+      grid-template-columns: 1.35fr .65fr;
       gap:12px;
+      position:relative; z-index:2;
     }
-    @media (max-width: 900px){ .grid{ grid-template-columns: 1fr; } }
+    @media (max-width: 920px){ .grid{ grid-template-columns: 1fr; } }
 
     .pane{
       background:#fff;
@@ -119,6 +82,7 @@
       padding:14px;
       box-shadow: 0 10px 24px rgba(0,0,0,.06);
     }
+
     .title{
       font-size:34px;
       margin: 2px 0 6px;
@@ -131,108 +95,196 @@
       line-height:1.35;
     }
 
-    .bar{ height:10px; background:#00000010; border-radius:999px; overflow:hidden; }
-    .fill{ height:100%; width:0%; background: linear-gradient(90deg, #ff2d55, #8b5cf6); border-radius:999px; transition: width .35s ease; }
-    .hudRow{
+    .nav{
       display:flex;
-      justify-content:space-between;
-      gap:10px;
-      margin-top:6px;
-      font-size:13px;
-      color:var(--muted);
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
     }
-
-    .typingRow{ display:flex; gap:8px; align-items:flex-start; margin-top:12px; }
-    .typing{
-      margin:0;
-      min-height:74px;
-      white-space:pre-wrap;
-      font-size:18px;
-      line-height:1.35;
-      flex:1;
-    }
-    .caret{
-      width:10px; height:1em;
-      border-left:2px solid #111;
-      transform: translateY(4px);
-      animation: blink .9s infinite;
-    }
-    @keyframes blink{ 50%{ opacity:0; } }
-
-    .actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px; }
-    button{
-      font-size:16px;
-      padding: 11px 14px;
-      border:0;
-      border-radius: 16px;
+    .tab{
+      font-size:14px;
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid #00000014;
+      background:#00000006;
       cursor:pointer;
-      transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
       user-select:none;
+      transition: transform .14s ease, filter .14s ease;
     }
-    button:active{ transform: scale(.98); }
-    .primary{ background: var(--accent); color:#fff; box-shadow: 0 12px 26px rgba(255,45,85,.22); }
-    .primary:hover{ filter: brightness(1.03); transform: translateY(-1px); }
-    .ghost{ background:#00000008; border:1px solid #00000014; color:#222; }
-    .ghost:hover{ filter: brightness(1.03); transform: translateY(-1px); }
-    .danger{ background:#111; color:#fff; }
-    .ok{ background: #19c37d; color:#fff; }
+    .tab:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+    .tab.active{
+      background: #ff2d5516;
+      border-color:#ff2d5555;
+      font-weight:800;
+    }
 
     .panel{ display:none; margin-top:12px; }
     .panel.show{ display:block; }
 
+    .bar{ height:10px; background:#00000010; border-radius:999px; overflow:hidden; }
+    .fill{ height:100%; width:0%; background: linear-gradient(90deg, #ff2d55, #8b5cf6); border-radius:999px; transition: width .35s ease; }
+    .hudRow{
+      display:flex; justify-content:space-between; gap:10px;
+      margin-top:6px; font-size:13px; color:var(--muted);
+      flex-wrap:wrap;
+    }
+
+    .typingRow{ display:flex; gap:8px; align-items:flex-start; margin-top:12px; }
+    .typing{ margin:0; min-height:68px; white-space:pre-wrap; font-size:18px; line-height:1.35; flex:1; }
+    .caret{ width:10px; height:1em; border-left:2px solid #111; transform: translateY(4px); animation: blink .9s infinite; }
+    @keyframes blink{ 50%{ opacity:0; } }
+
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+    button{
+      font-size:16px; padding:11px 14px;
+      border:0; border-radius:16px; cursor:pointer;
+      transition: transform .18s ease, filter .18s ease;
+      user-select:none;
+    }
+    button:active{ transform: scale(.98); }
+    .primary{ background: var(--accent); color:#fff; }
+    .primary:hover{ filter: brightness(1.03); transform: translateY(-1px); }
+    .ghost{ background:#00000008; border:1px solid #00000014; color:#222; }
+    .ghost:hover{ filter: brightness(1.03); transform: translateY(-1px); }
+    .ok{ background: var(--good); color:#fff; }
+    .danger{ background:#111; color:#fff; }
+    button:disabled{ opacity:.55; cursor:not-allowed; transform:none !important; }
+
+    /* quiz */
     .q{ font-weight:900; margin:0 0 8px; }
     .opts{ display:grid; gap:8px; }
     .opt{
-      padding:12px;
-      border-radius:14px;
-      border:1px solid #00000014;
-      background:#00000005;
-      cursor:pointer;
-      transition: transform .14s ease, filter .14s ease;
+      padding:12px; border-radius:14px; border:1px solid #00000014; background:#00000005;
+      cursor:pointer; transition: transform .14s ease, filter .14s ease;
       font-size:15px;
     }
     .opt:hover{ transform: translateY(-1px); filter: brightness(1.03); }
-    .opt.good{ background: #19c37d16; border-color:#19c37d55; }
-    .opt.bad{ background: #ff2d5516; border-color:#ff2d5555; }
+    .opt.good{ background:#19c37d16; border-color:#19c37d55; }
+    .opt.bad{ background:#ff2d5516; border-color:#ff2d5555; }
 
-    /* memory */
-    .memInfo{ color:var(--muted); font-size:14px; display:flex; gap:14px; flex-wrap:wrap; }
-    .memGrid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:10px; }
-    @media (max-width: 520px){ .memGrid{ grid-template-columns: repeat(3, 1fr); } }
-    .tile{
+    /* wheel */
+    .wheelWrap{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      align-items:center;
+    }
+    @media (max-width: 720px){ .wheelWrap{ grid-template-columns: 1fr; } }
+    canvas{
+      width:100%;
+      max-width: 360px;
       aspect-ratio: 1/1;
+      border-radius: 18px;
+      background:#fff;
+      border:1px solid #00000012;
+      box-shadow: 0 10px 24px rgba(0,0,0,.06);
+    }
+    .pointer{
+      width:0; height:0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 16px solid #111;
+      margin: 0 auto 6px;
+    }
+    .miniCard{
+      background:#00000006;
+      border:1px solid #00000012;
+      border-radius: 16px;
+      padding:12px;
+    }
+
+    /* story */
+    .storyBox{
+      border:1px solid #00000012;
+      background:#00000006;
+      border-radius: 16px;
+      padding:12px;
+    }
+    .storyBtns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+    .choice{ flex: 1 1 160px; }
+
+    /* bingo */
+    .bingoGrid{
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap:10px;
+      margin-top:10px;
+    }
+    @media (max-width: 760px){ .bingoGrid{ grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 420px){ .bingoGrid{ grid-template-columns: repeat(2, 1fr); } }
+    .bingoCell{
+      min-height: 76px;
       border-radius:16px;
       border:1px solid #00000014;
-      background:#00000006;
+      background:#00000005;
+      padding:10px;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:28px;
+      text-align:center;
+      font-size:13px;
+      line-height:1.25;
       cursor:pointer;
       user-select:none;
-      transition: transform .14s ease, filter .14s ease, background .14s ease;
-      position:relative;
+      transition: transform .14s ease, filter .14s ease;
     }
-    .tile:hover{ transform: translateY(-1px); filter: brightness(1.03); }
-    .tile.revealed{ background:#fff; }
-    .tile.matched{ background:#19c37d16; border-color:#19c37d55; cursor:default; }
+    .bingoCell:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+    .bingoCell.done{
+      background:#19c37d16;
+      border-color:#19c37d55;
+      font-weight:800;
+    }
 
-    /* slider */
-    input[type="range"]{ width:100%; accent-color: var(--accent); }
+    /* countdown */
+    .countBox{
+      display:grid;
+      gap:10px;
+      border:1px solid #00000012;
+      background:#00000006;
+      border-radius: 16px;
+      padding:12px;
+    }
+    .timeGrid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 520px){ .timeGrid{ grid-template-columns: repeat(2, 1fr); } }
+    .timeCard{
+      background:#fff;
+      border:1px solid #00000012;
+      border-radius:16px;
+      padding:12px;
+      text-align:center;
+    }
+    .num{ font-size:26px; font-weight:900; }
+    .lbl{ color:var(--muted); font-size:12px; }
 
-    /* certificate */
+    /* tiny things */
+    .list{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .note{
+      background:#fff;
+      border:1px solid #00000012;
+      border-radius: 16px;
+      padding:12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.06);
+    }
+    .note b{ display:block; margin-bottom:6px; }
+    .note p{ margin:0; color:var(--muted); line-height:1.35; }
+
+    /* final */
     .cert{
-      margin-top:12px;
+      margin-top:10px;
       background: linear-gradient(135deg, #fff, #fff7f9);
       border:1px solid #00000012;
       border-radius:18px;
       padding:14px;
       box-shadow: 0 10px 24px rgba(0,0,0,.06);
-      position:relative;
-      overflow:hidden;
     }
-    .cert h2{ margin:0 0 6px; font-size:20px; }
-    .cert p{ margin:0; color:var(--muted); }
     .stamp{
       display:inline-block;
       padding:8px 12px;
@@ -244,68 +296,29 @@
       background:#19c37d14;
       width: fit-content;
       margin-top:10px;
-      animation: pop .6s ease both;
     }
-    @keyframes pop{
-      from{ transform: translateY(8px) rotate(-10deg) scale(.9); opacity:.0; }
-      to{ transform: translateY(0) rotate(-6deg) scale(1); opacity:1; }
-    }
-
-    .meter{
-      background:#00000008;
-      border:1px solid #00000012;
-      border-radius:14px;
-      padding:10px 12px;
-      display:grid;
-      gap:6px;
-      margin-top:10px;
-    }
-    .mbar{ height:10px; background:#00000012; border-radius:999px; overflow:hidden; }
+    .meter{ background:#00000008; border:1px solid #00000012; border-radius:14px; padding:10px 12px; display:grid; gap:6px; margin-top:10px; }
+    .mbar{ height: 10px; background:#00000012; border-radius:999px; overflow:hidden; }
     .mfill{ height:100%; width:0%; background: linear-gradient(90deg, #ff2d55, #8b5cf6); border-radius:999px; transition: width .6s ease; }
 
-    /* achievement + toast */
+    /* toast */
     .toast{
-      position: fixed;
-      left:50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      background: #111;
-      color:#fff;
-      padding: 10px 14px;
-      border-radius: 999px;
+      position: fixed; left:50%; bottom: 18px; transform: translateX(-50%);
+      background: #111; color:#fff; padding: 10px 14px; border-radius: 999px;
       box-shadow: 0 10px 30px rgba(0,0,0,.25);
-      font-size: 14px;
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .2s ease, transform .2s ease;
-      z-index: 99999;
+      font-size: 14px; opacity:0; pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease; z-index: 99999;
     }
     .toast.show{ opacity:1; transform: translateX(-50%) translateY(-4px); }
-
-    .ach{
-      position: fixed;
-      right: 18px;
-      top: 18px;
-      width: min(320px, 90vw);
-      background:#ffffff;
-      border:1px solid #00000012;
-      border-radius:18px;
-      box-shadow: 0 14px 40px rgba(0,0,0,.18);
-      padding:12px;
-      transform: translateY(-10px);
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .25s ease, transform .25s ease;
-      z-index: 99998;
+    .hintBox{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:8px;
+      border:1px dashed #0000001c;
+      border-radius:16px;
+      padding:10px;
+      background:#fff;
     }
-    .ach.show{ opacity:1; transform: translateY(0); }
-    .achTitle{ font-weight:900; margin:0 0 4px; }
-    .achText{ margin:0; color:var(--muted); font-size:14px; line-height:1.35; }
-
-    .sideTitle{ font-weight:900; margin:0 0 8px; }
-    .sideList{ margin:0; padding-left:16px; color:var(--muted); font-size:14px; line-height:1.45; }
-    .kv{ display:grid; grid-template-columns: 1fr auto; gap:6px 10px; margin-top:10px; font-size:14px; color:var(--muted); }
-    .kv b{ color:#222; }
   </style>
 </head>
 
@@ -315,151 +328,330 @@
       <div class="float" id="float"></div>
 
       <div class="top">
-        <div class="pill">🎮 Valentine Quest</div>
-        <div class="pill">Player: <strong>Aila</strong></div>
-        <div class="pill">Level: <strong id="lvl">1</strong></div>
-        <div class="pill">XP: <strong id="xp">0</strong></div>
-        <div class="pill">Streak: <strong id="streak">0</strong> 🔥</div>
+        <div class="pill">✨ 1 Month Anniversary Site</div>
+        <div class="pill">For: <strong id="whoFor">Aila</strong></div>
+        <div class="pill">From: <strong id="whoFrom">Abhiraj</strong></div>
+        <div class="pill">Progress: <strong id="progTxt">0%</strong></div>
       </div>
 
       <div class="grid">
         <!-- MAIN -->
         <div class="pane">
-          <div class="title">Aila 💖</div>
-          <p class="subtitle">
-            Beat the mini-games to unlock the certificate.
-            (Made with dangerously high effort by <b>Abhiraj</b>.)
+          <div class="title" id="heroTitle">Happy 1 Month 💖</div>
+          <p class="subtitle" id="heroSub">
+            A tiny website with mini-games + sweet stuff. Each section unlocks the final surprise. 😄
           </p>
 
           <div class="bar"><div class="fill" id="progressFill"></div></div>
           <div class="hudRow">
-            <span id="stepText">Step 0 / 3</span>
-            <span id="timerText">Timer: —</span>
+            <span id="hudLeft">Section: Home</span>
+            <span id="hudRight">Tip: Use the tabs</span>
           </div>
 
           <div class="typingRow">
             <p class="typing" id="typing"></p><span class="caret" aria-hidden="true"></span>
           </div>
 
-          <div class="actions">
-            <button class="primary" id="btnStart">Start Quest 🚀</button>
-            <button class="ghost" id="btnHint">Hint</button>
-            <button class="ghost" id="btnSound">Sound: Off</button>
-            <button class="danger" id="btnReset">Reset</button>
+          <div class="nav" id="nav"></div>
+
+          <!-- HOME -->
+          <div class="panel show" id="pHome">
+            <div class="miniCard">
+              <div style="font-weight:900; margin-bottom:6px;">How this works</div>
+              <div style="color:var(--muted); line-height:1.45;">
+                Open each tab and complete it once:
+                <ul style="margin:8px 0 0; padding-left:18px;">
+                  <li>Memory Lane Quiz ✅</li>
+                  <li>Spin-the-Wheel Date Chooser ✅</li>
+                  <li>Choose-Your-Date Story ✅</li>
+                  <li>Anniversary Bingo ✅</li>
+                  <li>Countdown + Surprise Reveal ✅</li>
+                  <li>Tiny Things I Noticed ✅</li>
+                </ul>
+                When you’ve done enough, the <b>Final Surprise</b> unlocks.
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="primary" id="btnStart">Start 🥳</button>
+              <button class="ghost" id="btnResetAll">Reset Progress</button>
+              <button class="ghost" id="btnCopyLinkText">Copy a cute message</button>
+            </div>
+
+            <div class="hintBox" id="homeHint">
+              You can customize the content at the top of the JS (names, date/time, quiz questions, bingo items, notes).
+            </div>
           </div>
 
           <!-- QUIZ -->
           <div class="panel" id="pQuiz">
             <p class="q" id="qText">Question</p>
             <div class="opts" id="opts"></div>
+            <div class="hudRow">
+              <span>Quiz progress: <b id="qProg">0/0</b></span>
+              <span id="quizStatus"></span>
+            </div>
           </div>
 
-          <!-- MEMORY -->
-          <div class="panel" id="pMemory">
-            <p class="q">Mini-game: Memory Match 🧠</p>
-            <div class="memInfo">
-              <span>Moves left: <b id="movesLeft">10</b></span>
-              <span>Best streak: <b id="bestStreak">0</b></span>
+          <!-- WHEEL -->
+          <div class="panel" id="pWheel">
+            <div class="wheelWrap">
+              <div>
+                <div class="pointer"></div>
+                <canvas id="wheel" width="600" height="600"></canvas>
+              </div>
+              <div class="miniCard">
+                <div style="font-weight:900; margin-bottom:6px;">Spin-the-Wheel Date Chooser 🎡</div>
+                <div style="color:var(--muted); line-height:1.45;">
+                  Spin once to pick a date idea. You can re-spin, but only if you admit you’re nervous 😄
+                </div>
+                <div class="actions">
+                  <button class="primary" id="btnSpin">Spin 🎯</button>
+                  <button class="ghost" id="btnRespin">Re-spin 😅</button>
+                </div>
+                <div class="hintBox">
+                  Result: <b id="wheelResult">—</b><br/>
+                  Saved pick: <b id="wheelSaved">—</b>
+                </div>
+              </div>
             </div>
-            <div class="memGrid" id="memGrid"></div>
           </div>
 
-          <!-- SLIDER -->
-          <div class="panel" id="pSlider">
-            <p class="q">Final lock: “Yes Energy” Calibration 🔒</p>
-            <div class="memInfo" id="lieText">Slide to <b>90%</b>+ to unlock. (Lie detector: armed.)</div>
-            <div style="margin-top:10px;">
-              <input id="yesSlider" type="range" min="0" max="100" value="8" />
-              <div class="hudRow"><span>meh</span><span>YES</span></div>
+          <!-- STORY -->
+          <div class="panel" id="pStory">
+            <div class="storyBox">
+              <div style="font-weight:900;" id="storyTitle">Choose Your Date Story 📖</div>
+              <div style="color:var(--muted); line-height:1.45; margin-top:6px;" id="storyBody"></div>
+              <div class="storyBtns" id="storyBtns"></div>
             </div>
-            <div class="actions" style="margin-top:10px;">
-              <button class="primary" id="btnUnlock" disabled>Unlock ✅</button>
+          </div>
+
+          <!-- BINGO -->
+          <div class="panel" id="pBingo">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+              <div>
+                <div style="font-weight:900;">Anniversary Bingo ✅</div>
+                <div style="color:var(--muted); font-size:14px;">Tap squares to mark. Get <b id="bingoNeed">8</b> done to complete.</div>
+              </div>
+              <div class="pill">Done: <strong id="bingoDone">0</strong>/<span id="bingoTotal">0</span></div>
+            </div>
+            <div class="bingoGrid" id="bingoGrid"></div>
+            <div class="actions">
+              <button class="ghost" id="btnBingoClear">Clear Bingo</button>
+            </div>
+          </div>
+
+          <!-- COUNTDOWN -->
+          <div class="panel" id="pCountdown">
+            <div class="countBox">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                <div>
+                  <div style="font-weight:900;">Countdown to our date ⏳</div>
+                  <div style="color:var(--muted); font-size:14px;">When it hits zero, the surprise reveals.</div>
+                </div>
+                <div class="pill">Target: <strong id="targetTxt">—</strong></div>
+              </div>
+
+              <div class="timeGrid">
+                <div class="timeCard"><div class="num" id="d">0</div><div class="lbl">Days</div></div>
+                <div class="timeCard"><div class="num" id="h">0</div><div class="lbl">Hours</div></div>
+                <div class="timeCard"><div class="num" id="m">0</div><div class="lbl">Minutes</div></div>
+                <div class="timeCard"><div class="num" id="s">0</div><div class="lbl">Seconds</div></div>
+              </div>
+
+              <div class="miniCard" id="revealBox" style="display:none;">
+                <div style="font-weight:900;">Surprise Reveal 🎁</div>
+                <div style="color:var(--muted); line-height:1.45; margin-top:6px;" id="revealText"></div>
+                <div class="actions">
+                  <button class="ok" id="btnRevealDone">Mark as done ✅</button>
+                </div>
+              </div>
+
+              <div class="hintBox">
+                If you want it to unlock immediately, set the target time in the JS to a past time.
+              </div>
+            </div>
+          </div>
+
+          <!-- TINY THINGS -->
+          <div class="panel" id="pTiny">
+            <div style="font-weight:900;">Tiny things I noticed about you ✨</div>
+            <div style="color:var(--muted); margin-top:6px; line-height:1.45;">
+              These are small, but they’re the reason this month felt big.
+            </div>
+            <div class="list" id="tinyList"></div>
+            <div class="actions">
+              <button class="ok" id="btnTinyDone">I read them ✅</button>
             </div>
           </div>
 
           <!-- FINAL -->
           <div class="panel" id="pFinal">
-            <p class="q">🏆 Certificate Unlocked</p>
-
-            <div class="cert" id="cert">
-              <h2>Official Valentine Certificate</h2>
-              <p>Issued to: <b>Aila</b></p>
-              <p>Issued by: <b>Abhiraj</b></p>
-              <div class="stamp">✅ MATCH FOUND: AILA + ABHIRAJ</div>
-
-              <div class="meter">
-                <div><b>Yes Energy</b>: <span id="mYes">loading…</span></div>
-                <div class="mbar"><div class="mfill" id="bYes"></div></div>
-              </div>
-              <div class="meter">
-                <div><b>Laugh Compatibility</b>: <span id="mLaugh">loading…</span></div>
-                <div class="mbar"><div class="mfill" id="bLaugh"></div></div>
-              </div>
-              <div class="meter">
-                <div><b>Dessert Agreement</b>: <span id="mDessert">loading…</span></div>
-                <div class="mbar"><div class="mfill" id="bDessert"></div></div>
-              </div>
-              <div class="meter">
-                <div><b>Probability of Cute Date</b>: <span id="mCute">loading…</span></div>
-                <div class="mbar"><div class="mfill" id="bCute"></div></div>
+            <div class="cert">
+              <div style="font-size:18px; line-height:1.45;">
+                <b>Happy 1 Month, Aila.</b><br/>
+                This was my way of saying: I’m really happy it’s you. 💖
               </div>
 
-              <div style="margin-top:10px; color:var(--muted); font-size:14px;">
-                Rewards unlocked: 🍝 dinner + 🍰 dessert + 📸 cute photos
-              </div>
-            </div>
+              <div class="stamp" id="finalStamp">✅ MATCH FOUND: AILA + ABHIRAJ</div>
 
-            <div class="actions" style="margin-top:12px;">
-              <button class="ok" id="btnHearts">Confirm 💖</button>
-              <button class="ghost" id="btnCopy">Copy message</button>
-              <button class="ghost" id="btnDownload">Download certificate</button>
+              <div class="meter">
+                <div><b>Month 1 rating</b>: <span id="m1">loading…</span></div>
+                <div class="mbar"><div class="mfill" id="b1"></div></div>
+              </div>
+              <div class="meter">
+                <div><b>Laugh compatibility</b>: <span id="m2">loading…</span></div>
+                <div class="mbar"><div class="mfill" id="b2"></div></div>
+              </div>
+              <div class="meter">
+                <div><b>Future date probability</b>: <span id="m3">loading…</span></div>
+                <div class="mbar"><div class="mfill" id="b3"></div></div>
+              </div>
+
+              <div class="miniCard" style="margin-top:12px;">
+                <div style="font-weight:900;">Your saved date pick</div>
+                <div style="color:var(--muted); margin-top:6px;" id="finalDatePick">—</div>
+              </div>
+
+              <div class="actions" style="margin-top:12px;">
+                <button class="ok" id="btnHearts">Confirm 💖</button>
+                <button class="ghost" id="btnCopyMsg">Copy message</button>
+                <button class="danger" id="btnLockAgain">Lock again (prank)</button>
+              </div>
             </div>
           </div>
+
         </div>
 
         <!-- SIDE -->
         <div class="pane">
-          <div class="sideTitle">Quest Checklist</div>
-          <ul class="sideList">
-            <li>✨ Preloader “romance engine”</li>
-            <li>🎯 Timed quiz + streak bonus</li>
-            <li>🧠 Memory match (6 pairs)</li>
-            <li>🔒 Yes-energy lock (90%+)</li>
-            <li>🏆 Certificate + download button</li>
-          </ul>
-
-          <div class="kv">
-            <b>Goal</b><span>Unlock certificate</span>
-            <b>Cheese</b><span>High 🧀</span>
-            <b>Vibes</b><span>Immaculate ✨</span>
-            <b>No button</b><span>Deleted ✅</span>
+          <div style="font-weight:900; margin-bottom:8px;">Checklist</div>
+          <div class="miniCard" style="display:grid; gap:8px;">
+            <div>🧠 Quiz: <b id="cQuiz">❌</b></div>
+            <div>🎡 Wheel: <b id="cWheel">❌</b></div>
+            <div>📖 Story: <b id="cStory">❌</b></div>
+            <div>✅ Bingo: <b id="cBingo">❌</b></div>
+            <div>⏳ Countdown: <b id="cCount">❌</b></div>
+            <div>✨ Tiny things: <b id="cTiny">❌</b></div>
+            <div style="border-top:1px solid #00000012; padding-top:8px;">
+              Final: <b id="cFinal">🔒 Locked</b>
+            </div>
           </div>
 
-          <div style="margin-top:12px; color:var(--muted); font-size:14px; line-height:1.45;">
-            Send the link with: <b>“Aila, I made you a game.”</b>
+          <div style="margin-top:12px;" class="miniCard">
+            <div style="font-weight:900;">Quick tips</div>
+            <ul style="margin:8px 0 0; padding-left:18px; color:var(--muted); line-height:1.45; font-size:14px;">
+              <li>Edit the <b>CONFIG</b> in JS to personalize.</li>
+              <li>GitHub Pages sometimes caches — hard refresh: <b>Cmd+Shift+R</b>.</li>
+              <li>Bingo saves state in your browser (localStorage).</li>
+            </ul>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- preloader -->
-  <div class="overlay" id="overlay">
-    <div class="loaderCard">
-      <div class="loaderTitle">Loading Romance Engine…</div>
-      <p class="loaderText" id="loadText">Initializing butterflies…</p>
-      <div class="loadBar"><div class="loadFill" id="loadFill"></div></div>
-    </div>
-  </div>
-
   <div class="toast" id="toast">OK</div>
-  <div class="ach" id="ach">
-    <div class="achTitle" id="achTitle">Achievement Unlocked</div>
-    <p class="achText" id="achText">Text</p>
-  </div>
 
   <script>
-    // Helpers
+    /***********************
+     * CONFIG — EDIT ME ✅
+     ***********************/
+    const CONFIG = {
+      forName: "Aila",
+      fromName: "Abhiraj",
+      // Countdown target (local time). Example: "2026-02-14T19:30:00"
+      // If you want it to unlock immediately, set this to a past date/time.
+      countdownTargetISO: "2026-02-14T19:30:00",
+
+      revealMessage: "Surprise plan: I’m taking you out — your saved date pick is locked in. Dress comfy, bring your smile, and keep your schedule suspiciously open. 😄",
+
+      // Quiz questions (edit answers to match YOUR memories)
+      quiz: [
+        { q: "What was I wearing when we first met / first went out?", o: ["A black outfit", "A hoodie", "A shirt you liked"], a: 0 },
+        { q: "What is our first inside joke?", o: ["The ‘___’ joke", "The ‘___’ moment", "The ‘___’ text"], a: 1 },
+        { q: "What’s my favorite thing about you?", o: ["Your laugh", "Your eyes", "Your attitude (in a cute way)"], a: 0 },
+      ],
+
+      // Wheel options
+      wheelOptions: ["Coffee date ☕", "Dinner date 🍝", "Dessert-first 🍰", "Movie + snacks 🎬", "Walk + talk 🌙", "Arcade challenge 🎮"],
+
+      // Story (simple branching)
+      story: {
+        start: {
+          title: "Choose Your Date Story 📖",
+          body: "You open a mystery envelope. It says: ‘Happy 1 month.’\nPick the vibe for today:",
+          choices: [
+            { label: "Cute & calm", next: "calm" },
+            { label: "Fun & chaotic", next: "chaos" },
+            { label: "Romantic & soft", next: "soft" },
+          ]
+        },
+        calm: {
+          title: "Cute & calm 🌙",
+          body: "We go somewhere cozy, talk about everything and nothing, and end with dessert.\nQuestion: what do you want first?",
+          choices: [
+            { label: "Coffee ☕", next: "endCoffee" },
+            { label: "Dessert 🍰", next: "endDessert" },
+          ]
+        },
+        chaos: {
+          title: "Fun & chaotic 🎮",
+          body: "We compete in something silly (arcade / bowling / anything) and the loser has to say 3 compliments out loud.",
+          choices: [
+            { label: "I’m winning 😌", next: "endWin" },
+            { label: "You’re winning 😄", next: "endLose" },
+          ]
+        },
+        soft: {
+          title: "Romantic & soft 💖",
+          body: "We take cute photos, hold hands, and I say something cheesy on purpose.\nPick the setting:",
+          choices: [
+            { label: "Sunset walk 🌇", next: "endSunset" },
+            { label: "Dinner date 🍝", next: "endDinner" },
+          ]
+        },
+        endCoffee: { title:"Ending", body:"Ending unlocked: Coffee + long talk + a tiny surprise.\n\n(Approved.)", done:true },
+        endDessert:{ title:"Ending", body:"Ending unlocked: Dessert first because priorities.\n\n(Strong choice.)", done:true },
+        endWin:    { title:"Ending", body:"Ending unlocked: You win. I pretend to be mad. We both laugh.\n\n(Perfect.)", done:true },
+        endLose:   { title:"Ending", body:"Ending unlocked: I win. You demand a rematch.\n\n(We do a rematch.)", done:true },
+        endSunset: { title:"Ending", body:"Ending unlocked: Sunset walk + cute photos + ‘one more minute’.\n\n(Soft.)", done:true },
+        endDinner: { title:"Ending", body:"Ending unlocked: Dinner date + dessert + a calm hug.\n\n(Yes.)", done:true },
+      },
+
+      // Bingo items (tap to mark)
+      bingoNeed: 8,
+      bingoItems: [
+        "Hold hands",
+        "Take a cute pic",
+        "Say 1 cheesy line",
+        "Share dessert",
+        "Compliment each other",
+        "Mini walk",
+        "Laugh out loud",
+        "One ‘us’ selfie",
+        "Try a new place",
+        "Make a small plan",
+        "A long hug",
+        "Silly game",
+        "Tell a memory",
+        "Favorite song moment",
+        "‘I like you’ (again)",
+      ],
+
+      // Tiny things list
+      tinyThings: [
+        { title: "Your laugh", text: "It changes the whole mood of a day. Like it flips the ‘good’ switch." },
+        { title: "How you text", text: "Even one short message from you feels like a little win." },
+        { title: "Your expressions", text: "When you’re pretending to be serious but you’re about to smile — I notice." },
+        { title: "Your kindness", text: "The way you care shows up in small moments, and that’s the best kind." },
+        { title: "Your vibe", text: "You make normal things feel more fun. Effortlessly." },
+      ],
+    };
+
+    /***********************
+     * APP LOGIC
+     ***********************/
     const $ = (id)=>document.getElementById(id);
     const toastEl = $("toast");
     let toastTimer;
@@ -469,73 +661,7 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(()=>toastEl.classList.remove("show"), 1100);
     }
-
-    const achEl = $("ach");
-    let achTimer;
-    function achievement(title, text){
-      $("achTitle").textContent = title;
-      $("achText").textContent = text;
-      achEl.classList.add("show");
-      clearTimeout(achTimer);
-      achTimer = setTimeout(()=>achEl.classList.remove("show"), 2200);
-    }
-
     function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-
-    // Floating emojis
-    (function makeFloat(){
-      const f = $("float");
-      const emojis = ["💖","💗","💘","💞","🌹","✨","🍓","🎀"];
-      for(let i=0;i<22;i++){
-        const s=document.createElement("span");
-        s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-        s.style.left = (Math.random()*100) + "%";
-        s.style.animationDuration = (10 + Math.random()*14) + "s";
-        s.style.animationDelay = (-Math.random()*18) + "s";
-        s.style.fontSize = (18 + Math.random()*22) + "px";
-        f.appendChild(s);
-      }
-    })();
-
-    // Optional sound
-    let soundOn = false;
-    let audioCtx = null;
-    function beep(freq=660, ms=70, type="sine"){
-      if(!soundOn) return;
-      try{
-        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-        const o = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        o.type = type;
-        o.frequency.value = freq;
-        g.gain.value = 0.045;
-        o.connect(g); g.connect(audioCtx.destination);
-        o.start();
-        setTimeout(()=>o.stop(), ms);
-      } catch(e){}
-    }
-    function successSound(){ beep(784, 80, "triangle"); setTimeout(()=>beep(988, 90, "triangle"), 90); }
-    function failSound(){ beep(220, 120, "sawtooth"); }
-
-    // Hearts confetti
-    function heartsBurst(n=24){
-      for(let i=0;i<n;i++){
-        const s=document.createElement("span");
-        s.textContent = ["💖","💗","💘","💞","✨"][Math.floor(Math.random()*5)];
-        s.style.position="fixed";
-        s.style.left=(Math.random()*100)+"vw";
-        s.style.top="-12px";
-        s.style.fontSize=(16+Math.random()*22)+"px";
-        s.style.transition="transform 2.4s linear, opacity 2.4s linear";
-        s.style.zIndex="9999";
-        document.body.appendChild(s);
-        requestAnimationFrame(()=>{
-          s.style.transform=`translateY(112vh) rotate(${Math.random()*520}deg)`;
-          s.style.opacity="0";
-        });
-        setTimeout(()=>s.remove(),2500);
-      }
-    }
 
     // Typewriter
     const typingEl = $("typing");
@@ -555,83 +681,175 @@
       }, speed);
     }
 
-    // Panels
-    function showPanel(id){
-      ["pQuiz","pMemory","pSlider","pFinal"].forEach(pid => $(pid).classList.remove("show"));
-      if(id) $(id).classList.add("show");
-    }
-
-    // HUD
-    let step = 0; // 0 idle, 1 quiz, 2 memory, 3 slider, 4 final
-    let xp = 0, lvl = 1, streak = 0, bestStreak = 0;
-
-    function setHUD(){
-      $("xp").textContent = xp;
-      $("lvl").textContent = lvl;
-      $("streak").textContent = streak;
-      $("bestStreak").textContent = bestStreak;
-
-      const stepText = {0:"Step 0 / 3", 1:"Step 1 / 3", 2:"Step 2 / 3", 3:"Step 3 / 3", 4:"Completed ✅"};
-      $("stepText").textContent = stepText[step] || "—";
-
-      const pct = step === 0 ? 0 : (step >= 4 ? 100 : Math.round((step/3)*100));
-      $("progressFill").style.width = pct + "%";
-    }
-
-    function addXP(n){
-      xp += n;
-      const newLvl = 1 + Math.floor(xp / 140);
-      if(newLvl > lvl){
-        lvl = newLvl;
-        achievement("Level Up 🎉", `Level ${lvl} unlocked. Yes energy increasing.`);
-        heartsBurst(10);
-        successSound();
+    // Floating emojis
+    (function makeFloat(){
+      const f = $("float");
+      const emojis = ["💖","💗","💘","💞","🌹","✨","🍓","🎀"];
+      for(let i=0;i<22;i++){
+        const s=document.createElement("span");
+        s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+        s.style.left = (Math.random()*100) + "%";
+        s.style.animationDuration = (10 + Math.random()*14) + "s";
+        s.style.animationDelay = (-Math.random()*18) + "s";
+        s.style.fontSize = (18 + Math.random()*22) + "px";
+        f.appendChild(s);
       }
-      setHUD();
+    })();
+
+    // Names
+    $("whoFor").textContent = CONFIG.forName;
+    $("whoFrom").textContent = CONFIG.fromName;
+    $("heroTitle").textContent = `Happy 1 Month, ${CONFIG.forName} 💖`;
+    $("heroSub").innerHTML = `A tiny website with mini-games + sweet stuff. Made by <b>${CONFIG.fromName}</b>.`;
+
+    // Tabs
+    const TABS = [
+      { id:"pHome", label:"Home" },
+      { id:"pQuiz", label:"Memory Quiz" },
+      { id:"pWheel", label:"Spin Wheel" },
+      { id:"pStory", label:"Story" },
+      { id:"pBingo", label:"Bingo" },
+      { id:"pCountdown", label:"Countdown" },
+      { id:"pTiny", label:"Tiny Things" },
+      { id:"pFinal", label:"Final Surprise" },
+    ];
+    const nav = $("nav");
+
+    function showPanel(id){
+      TABS.forEach(t => $(t.id).classList.remove("show"));
+      $(id).classList.add("show");
+
+      [...nav.children].forEach(b => b.classList.remove("active"));
+      const btn = [...nav.children].find(b => b.dataset.target === id);
+      if(btn) btn.classList.add("active");
+
+      const name = TABS.find(t=>t.id===id)?.label || "—";
+      $("hudLeft").textContent = `Section: ${name}`;
+
+      // prevent going to final if locked
+      if(id === "pFinal" && !isFinalUnlocked()){
+        toast("Final is locked 🔒 Complete sections first!");
+        showPanel("pHome");
+      }
     }
 
-    function bumpStreak(ok){
-      streak = ok ? (streak + 1) : 0;
-      if(streak > bestStreak) bestStreak = streak;
-      setHUD();
-    }
+    TABS.forEach((t, i)=>{
+      const b = document.createElement("div");
+      b.className = "tab";
+      b.textContent = t.label;
+      b.dataset.target = t.id;
+      b.onclick = ()=> showPanel(t.id);
+      nav.appendChild(b);
+      if(i===0) b.classList.add("active");
+    });
 
-    // Timer (quiz)
-    let timer = null;
-    let timeLeft = 0;
-    function stopTimer(){
-      clearInterval(timer);
-      $("timerText").textContent = "Timer: —";
-    }
-    function startTimer(seconds, onFail){
-      clearInterval(timer);
-      timeLeft = seconds;
-      $("timerText").textContent = `Timer: ${timeLeft}s`;
-      timer = setInterval(()=>{
-        timeLeft--;
-        $("timerText").textContent = `Timer: ${timeLeft}s`;
-        if(timeLeft <= 0){
-          clearInterval(timer);
-          $("timerText").textContent = "Timer: 0s";
-          onFail && onFail();
+    // Progress state (localStorage)
+    const KEY = "oneMonthSite_v1";
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(KEY);
+        if(!raw) return {
+          quizDone:false, wheelDone:false, storyDone:false,
+          bingoDone:false, countDone:false, tinyDone:false,
+          wheelSaved:null,
+          bingoMarks: Array(CONFIG.bingoItems.length).fill(false),
+        };
+        const s = JSON.parse(raw);
+        // ensure length
+        if(!Array.isArray(s.bingoMarks) || s.bingoMarks.length !== CONFIG.bingoItems.length){
+          s.bingoMarks = Array(CONFIG.bingoItems.length).fill(false);
         }
-      }, 1000);
+        return s;
+      } catch(e){
+        return {
+          quizDone:false, wheelDone:false, storyDone:false,
+          bingoDone:false, countDone:false, tinyDone:false,
+          wheelSaved:null,
+          bingoMarks: Array(CONFIG.bingoItems.length).fill(false),
+        };
+      }
     }
+    function saveState(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+    let state = loadState();
+
+    function isFinalUnlocked(){
+      // require at least 5/6 sections done (you can change this rule)
+      const doneCount = ["quizDone","wheelDone","storyDone","bingoDone","countDone","tinyDone"].filter(k=>state[k]).length;
+      return doneCount >= 5;
+    }
+
+    function updateChecklist(){
+      $("cQuiz").textContent = state.quizDone ? "✅" : "❌";
+      $("cWheel").textContent = state.wheelDone ? "✅" : "❌";
+      $("cStory").textContent = state.storyDone ? "✅" : "❌";
+      $("cBingo").textContent = state.bingoDone ? "✅" : "❌";
+      $("cCount").textContent = state.countDone ? "✅" : "❌";
+      $("cTiny").textContent = state.tinyDone ? "✅" : "❌";
+      $("cFinal").textContent = isFinalUnlocked() ? "🔓 Unlocked" : "🔒 Locked";
+    }
+
+    function updateProgressBar(){
+      const total = 6;
+      const done = ["quizDone","wheelDone","storyDone","bingoDone","countDone","tinyDone"].filter(k=>state[k]).length;
+      const pct = Math.round((done/total)*100);
+      $("progTxt").textContent = pct + "%";
+      $("progressFill").style.width = pct + "%";
+      $("hudRight").textContent = isFinalUnlocked() ? "Final is unlocked ✅" : `Complete ${Math.max(0, 5-done)} more section(s) to unlock final`;
+      updateChecklist();
+    }
+
+    // HOME actions
+    $("btnStart").onclick = ()=>{
+      toast("Let’s go 😄");
+      typeLine(`Hi ${CONFIG.forName} 💖\nThis is our 1-month mini-site.\nStart with the Memory Quiz.`);
+      showPanel("pQuiz");
+    };
+
+    $("btnResetAll").onclick = ()=>{
+      if(!confirm("Reset all progress?")) return;
+      localStorage.removeItem(KEY);
+      state = loadState();
+      toast("Reset ✅");
+      updateProgressBar();
+      setupBingo();
+      setWheelSavedText();
+      resetQuiz();
+      setStory(CONFIG.story.start);
+      updateCountdown();
+      showPanel("pHome");
+      typeLine(`Reset complete.\n${CONFIG.forName}, you’ve been granted a fresh run 😄`);
+    };
+
+    $("btnCopyLinkText").onclick = async ()=>{
+      const msg = `I made a 1-month anniversary mini-site for you 💖\nOpen it when you’re free.\n\n— ${CONFIG.fromName}`;
+      await copyText(msg);
+      toast("Copied ✅");
+    };
 
     // QUIZ
-    const quiz = [
-      { q: "1) Confirm the correct response:", a: 0, o: ["Yes, obviously 💖", "Maybe", "I need to consult my lawyer"] },
-      { q: "2) Pick a date difficulty:", a: 1, o: ["Hard mode (awkward eye contact)", "Easy mode (cute date + laughs)", "Expert mode (flowers + puns)"] },
-      { q: "3) Select the best reward:", a: 2, o: ["Only dinner", "Only dessert", "Dinner + dessert 🍰"] }
-    ];
     let qIdx = 0;
+    function resetQuiz(){
+      qIdx = 0;
+      renderQuiz();
+      $("quizStatus").textContent = state.quizDone ? "✅ Completed" : "";
+    }
 
     function renderQuiz(){
-      showPanel("pQuiz");
-      const q = quiz[qIdx];
-      $("qText").textContent = q.q;
+      const q = CONFIG.quiz[qIdx];
+      $("qProg").textContent = `${Math.min(qIdx, CONFIG.quiz.length)}/${CONFIG.quiz.length}`;
+      $("qText").textContent = q ? q.q : "Quiz complete ✅";
       const opts = $("opts");
       opts.innerHTML = "";
+
+      if(!q){
+        state.quizDone = true;
+        saveState();
+        updateProgressBar();
+        $("quizStatus").textContent = "✅ Completed";
+        toast("Quiz completed ✅");
+        typeLine("Nice 😄\nNext: spin the wheel!");
+        return;
+      }
 
       q.o.forEach((label, i)=>{
         const b = document.createElement("div");
@@ -640,398 +858,400 @@
         b.onclick = ()=>{
           if(i === q.a){
             b.classList.add("good");
-            stopTimer();
-            bumpStreak(true);
-            addXP(45 + Math.min(streak,5)*6);
             toast("Correct ✅");
-            successSound();
-            if(qIdx === 2 && streak >= 3){
-              achievement("Perfect Streak 🔥", "Quiz cleared with a streak. Respect.");
-              addXP(25);
-            }
             setTimeout(()=>{
               qIdx++;
-              if(qIdx >= quiz.length){
-                goToMemory();
+              renderQuiz();
+              if(qIdx >= CONFIG.quiz.length){
+                $("qProg").textContent = `${CONFIG.quiz.length}/${CONFIG.quiz.length}`;
               } else {
-                renderQuiz();
+                $("qProg").textContent = `${qIdx}/${CONFIG.quiz.length}`;
               }
-            }, 350);
+            }, 220);
           } else {
             b.classList.add("bad");
-            bumpStreak(false);
-            addXP(5);
-            toast("Nice try 😄");
-            failSound();
-            setTimeout(()=> b.classList.remove("bad"), 650);
+            toast("Close 😄");
+            setTimeout(()=>b.classList.remove("bad"), 450);
           }
         };
         opts.appendChild(b);
       });
+    }
 
-      startTimer(12, ()=>{
-        bumpStreak(false);
-        failSound();
-        toast("Time! 😄 Try again.");
-        renderQuiz();
+    // WHEEL
+    const wheelCanvas = $("wheel");
+    const ctx = wheelCanvas.getContext("2d");
+    let wheelAngle = 0;
+    let spinning = false;
+    let wheelResult = null;
+
+    function setWheelSavedText(){
+      $("wheelSaved").textContent = state.wheelSaved || "—";
+      $("finalDatePick").textContent = state.wheelSaved || "No saved pick yet — spin the wheel 😄";
+    }
+
+    function drawWheel(){
+      const opts = CONFIG.wheelOptions;
+      const n = opts.length;
+      const cx = wheelCanvas.width/2;
+      const cy = wheelCanvas.height/2;
+      const r = Math.min(cx,cy) - 18;
+
+      ctx.clearRect(0,0,wheelCanvas.width,wheelCanvas.height);
+
+      // background
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(wheelAngle);
+
+      for(let i=0;i<n;i++){
+        const a0 = (i * 2*Math.PI)/n;
+        const a1 = ((i+1) * 2*Math.PI)/n;
+
+        // alternating simple colors
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.arc(0,0,r,a0,a1);
+        ctx.closePath();
+        ctx.fillStyle = (i % 2 === 0) ? "rgba(255,45,85,0.15)" : "rgba(139,92,246,0.12)";
+        ctx.fill();
+        ctx.strokeStyle = "rgba(0,0,0,0.07)";
+        ctx.stroke();
+
+        // text
+        ctx.save();
+        ctx.rotate((a0+a1)/2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#111";
+        ctx.font = "bold 22px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+        ctx.fillText(opts[i], r-14, 8);
+        ctx.restore();
+      }
+
+      // center
+      ctx.beginPath();
+      ctx.arc(0,0,52,0,Math.PI*2);
+      ctx.fillStyle = "#fff";
+      ctx.fill();
+      ctx.strokeStyle = "rgba(0,0,0,0.10)";
+      ctx.stroke();
+
+      ctx.fillStyle = "#111";
+      ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("SPIN", 0, 6);
+
+      ctx.restore();
+    }
+
+    function getWheelPick(){
+      const n = CONFIG.wheelOptions.length;
+      // pointer is at top (angle 0). Convert wheelAngle to index.
+      let a = (-wheelAngle) % (2*Math.PI);
+      if(a < 0) a += 2*Math.PI;
+      const slice = (2*Math.PI)/n;
+      const idx = Math.floor(a / slice);
+      return CONFIG.wheelOptions[idx];
+    }
+
+    function spin(){
+      if(spinning) return;
+      spinning = true;
+      wheelResult = null;
+      $("wheelResult").textContent = "Spinning…";
+
+      const extra = (Math.random()*5 + 6) * 2*Math.PI; // lots of spins
+      const target = wheelAngle + extra + (Math.random()*0.7);
+      const start = wheelAngle;
+      const dur = 1800 + Math.random()*800;
+      const t0 = performance.now();
+
+      function anim(t){
+        const p = Math.min(1, (t - t0)/dur);
+        // easeOutCubic
+        const e = 1 - Math.pow(1-p, 3);
+        wheelAngle = start + (target - start) * e;
+        drawWheel();
+        if(p < 1){
+          requestAnimationFrame(anim);
+        } else {
+          spinning = false;
+          wheelResult = getWheelPick();
+          $("wheelResult").textContent = wheelResult;
+          toast("Wheel picked ✅");
+
+          // mark done + save choice
+          state.wheelDone = true;
+          state.wheelSaved = wheelResult;
+          saveState();
+          updateProgressBar();
+          setWheelSavedText();
+
+          typeLine("Okay that’s cute.\nNext: the story tab 😄");
+        }
+      }
+      requestAnimationFrame(anim);
+    }
+
+    $("btnSpin").onclick = spin;
+    $("btnRespin").onclick = ()=>{
+      if(spinning) return;
+      toast("Re-spin granted 😄");
+      spin();
+    };
+
+    // STORY
+    let storyNodeKey = "start";
+    function setStory(node){
+      $("storyTitle").textContent = node.title;
+      $("storyBody").textContent = node.body;
+      const box = $("storyBtns");
+      box.innerHTML = "";
+
+      if(node.done){
+        const doneBtn = document.createElement("button");
+        doneBtn.className = "ok choice";
+        doneBtn.textContent = "Finish story ✅";
+        doneBtn.onclick = ()=>{
+          state.storyDone = true;
+          saveState();
+          updateProgressBar();
+          toast("Story completed ✅");
+          typeLine("That ending was… very you.\nNext: Bingo 😄");
+        };
+        box.appendChild(doneBtn);
+        return;
+      }
+
+      node.choices.forEach(ch=>{
+        const b = document.createElement("button");
+        b.className = "ghost choice";
+        b.textContent = ch.label;
+        b.onclick = ()=>{
+          storyNodeKey = ch.next;
+          setStory(CONFIG.story[ch.next]);
+          if(CONFIG.story[ch.next]?.done){
+            toast("Ending unlocked 🎉");
+          } else {
+            toast("Choice saved ✅");
+          }
+        };
+        box.appendChild(b);
       });
     }
 
-    function goToQuiz(){
-      step = 1;
-      setHUD();
-      typeLine("Mini-game 1: Timed Quiz 🎯\nAnswer all 3 questions to continue.\n\n(Your streak is being judged.)");
-      qIdx = 0;
-      renderQuiz();
-    }
-
-    // MEMORY
-    const memEmojis = ["💖","🍓","✨","🌹","💘","🎀"];
-    let memDeck = [];
-    let firstPick = null;
-    let lock = false;
-    let matched = 0;
-    let movesLeft = 10;
-
-    function shuffle(arr){
-      for(let i=arr.length-1;i>0;i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [arr[i],arr[j]] = [arr[j],arr[i]];
-      }
-      return arr;
-    }
-
-    function setupMemory(){
-      showPanel("pMemory");
-      stopTimer();
-      matched = 0;
-      firstPick = null;
-      lock = false;
-      movesLeft = 10;
-      $("movesLeft").textContent = movesLeft;
-
-      memDeck = shuffle([...memEmojis, ...memEmojis]);
-      const grid = $("memGrid");
+    // BINGO
+    function setupBingo(){
+      $("bingoNeed").textContent = CONFIG.bingoNeed;
+      $("bingoTotal").textContent = CONFIG.bingoItems.length;
+      const grid = $("bingoGrid");
       grid.innerHTML = "";
 
-      memDeck.forEach((emoji)=>{
-        const t = document.createElement("div");
-        t.className = "tile";
-        t.dataset.emoji = emoji;
-        t.dataset.state = "hidden";
-        t.textContent = "❓";
-        t.onclick = ()=> onTileClick(t);
-        grid.appendChild(t);
+      CONFIG.bingoItems.forEach((txt, i)=>{
+        const cell = document.createElement("div");
+        cell.className = "bingoCell";
+        cell.textContent = txt;
+        if(state.bingoMarks[i]) cell.classList.add("done");
+
+        cell.onclick = ()=>{
+          state.bingoMarks[i] = !state.bingoMarks[i];
+          cell.classList.toggle("done", state.bingoMarks[i]);
+          saveState();
+          updateBingoCount();
+        };
+        grid.appendChild(cell);
+      });
+
+      updateBingoCount();
+    }
+
+    function updateBingoCount(){
+      const done = state.bingoMarks.filter(Boolean).length;
+      $("bingoDone").textContent = done;
+
+      if(done >= CONFIG.bingoNeed && !state.bingoDone){
+        state.bingoDone = true;
+        saveState();
+        toast("Bingo completed ✅");
+        typeLine("Bingo cleared 😄\nNext: Countdown.");
+      }
+      updateProgressBar();
+    }
+
+    $("btnBingoClear").onclick = ()=>{
+      if(!confirm("Clear bingo marks?")) return;
+      state.bingoMarks = Array(CONFIG.bingoItems.length).fill(false);
+      state.bingoDone = false;
+      saveState();
+      setupBingo();
+      toast("Cleared ✅");
+    };
+
+    // COUNTDOWN
+    const targetDate = new Date(CONFIG.countdownTargetISO);
+    $("targetTxt").textContent = targetDate.toLocaleString();
+
+    function updateCountdown(){
+      const now = new Date();
+      const diff = targetDate.getTime() - now.getTime();
+
+      if(diff <= 0){
+        $("d").textContent = "0";
+        $("h").textContent = "0";
+        $("m").textContent = "0";
+        $("s").textContent = "0";
+
+        $("revealBox").style.display = "block";
+        $("revealText").textContent = CONFIG.revealMessage;
+
+        if(!state.countDone){
+          // not auto-completing until they press "done"
+          // (so they actually see the reveal)
+        }
+        return;
+      }
+
+      const sec = Math.floor(diff/1000);
+      const days = Math.floor(sec / 86400);
+      const hours = Math.floor((sec % 86400) / 3600);
+      const mins = Math.floor((sec % 3600) / 60);
+      const secs = sec % 60;
+
+      $("d").textContent = String(days);
+      $("h").textContent = String(hours);
+      $("m").textContent = String(mins);
+      $("s").textContent = String(secs);
+
+      $("revealBox").style.display = "none";
+    }
+
+    $("btnRevealDone").onclick = ()=>{
+      state.countDone = true;
+      saveState();
+      updateProgressBar();
+      toast("Reveal completed ✅");
+      typeLine("Okay now… Tiny Things tab 🥺");
+    };
+
+    setInterval(updateCountdown, 1000);
+
+    // TINY THINGS
+    function renderTiny(){
+      const list = $("tinyList");
+      list.innerHTML = "";
+      CONFIG.tinyThings.forEach(item=>{
+        const d = document.createElement("div");
+        d.className = "note";
+        d.innerHTML = `<b>${item.title}</b><p>${item.text}</p>`;
+        list.appendChild(d);
       });
     }
-
-    function reveal(tile){
-      tile.classList.add("revealed");
-      tile.textContent = tile.dataset.emoji;
-      tile.dataset.state = "revealed";
-    }
-    function hide(tile){
-      tile.classList.remove("revealed");
-      tile.textContent = "❓";
-      tile.dataset.state = "hidden";
-    }
-    function markMatched(a,b){
-      a.classList.remove("revealed");
-      b.classList.remove("revealed");
-      a.classList.add("matched");
-      b.classList.add("matched");
-      a.dataset.state = "matched";
-      b.dataset.state = "matched";
-    }
-
-    function onTileClick(tile){
-      if(lock) return;
-      if(tile.dataset.state !== "hidden") return;
-
-      reveal(tile);
-      beep(660, 45, "sine");
-
-      if(!firstPick){ firstPick = tile; return; }
-
-      movesLeft--;
-      $("movesLeft").textContent = movesLeft;
-
-      const a = firstPick;
-      const b = tile;
-      firstPick = null;
-
-      if(a.dataset.emoji === b.dataset.emoji){
-        lock = true;
-        setTimeout(()=>{
-          markMatched(a,b);
-          matched++;
-          lock = false;
-          bumpStreak(true);
-          addXP(30 + Math.min(streak,6)*4);
-          toast("Match ✅");
-          successSound();
-          if(matched === memEmojis.length){
-            achievement("Memory Master 🧠", "All pairs matched. Impressive.");
-            heartsBurst(18);
-            goToSlider();
-          }
-        }, 220);
-      } else {
-        lock = true;
-        setTimeout(()=>{
-          hide(a); hide(b);
-          lock = false;
-          bumpStreak(false);
-          addXP(4);
-          failSound();
-          toast("Nope 😄");
-          if(movesLeft <= 0){
-            achievement("Plot Twist 😄", "Out of moves. Restarting memory game.");
-            setupMemory();
-          }
-        }, 520);
-      }
-    }
-
-    function goToMemory(){
-      step = 2;
-      setHUD();
-      typeLine("Mini-game 2: Memory Match 🧠\nMatch all pairs within 10 moves.\n\nYes, it’s serious.");
-      setupMemory();
-    }
-
-    // SLIDER
-    function goToSlider(){
-      step = 3;
-      setHUD();
-      showPanel("pSlider");
-      stopTimer();
-      typeLine("Mini-game 3: Yes Energy Calibration 🔒\nSlide to 90%+ to unlock.\n\nLie detector: armed. 👀");
-
-      const slider = $("yesSlider");
-      const btn = $("btnUnlock");
-      const lieText = $("lieText");
-      slider.value = 8;
-      btn.disabled = true;
-
-      slider.oninput = ()=>{
-        const v = Number(slider.value);
-        if(v < 40) lieText.innerHTML = "Current reading: <b>denial</b>. (Cute.)";
-        else if(v < 70) lieText.innerHTML = "Current reading: <b>maybe</b>. We can work with this.";
-        else if(v < 90) lieText.innerHTML = "Current reading: <b>almost yes</b>. Slide a little more 😄";
-        else lieText.innerHTML = "✅ Verified: <b>YES ENERGY DETECTED</b>.";
-
-        if(v >= 90){
-          btn.disabled = false;
-          toast("✅ Verified.");
-          successSound();
-        } else {
-          btn.disabled = true;
-        }
-      };
-
-      btn.onclick = ()=>{
-        addXP(90);
-        achievement("Lock Cracked 🔓", "Certificate unlocked.");
-        heartsBurst(24);
-        goToFinal();
-      };
-    }
+    $("btnTinyDone").onclick = ()=>{
+      state.tinyDone = true;
+      saveState();
+      updateProgressBar();
+      toast("Aww ✅");
+      typeLine("Tiny things done.\nFinal might be unlocked now 👀");
+    };
 
     // FINAL
-    function animateMeters(){
-      const items = [
-        ["bYes","mYes", 95, 100, 160],
-        ["bLaugh","mLaugh", 88, 99, 360],
-        ["bDessert","mDessert", 97, 100, 560],
-        ["bCute","mCute", 92, 100, 760]
+    function animateFinalMeters(){
+      const bars = [
+        ["b1","m1", 95, 100, 120],
+        ["b2","m2", 90, 100, 320],
+        ["b3","m3", 92, 100, 520],
       ];
-      items.forEach(([bar,label,min,max,delay])=>{
+      bars.forEach(([bar, label, min, max, delay])=>{
         setTimeout(()=>{
           const v = rand(min,max);
           $(label).textContent = v + "%";
           requestAnimationFrame(()=> $(bar).style.width = v + "%");
         }, delay);
       });
-      setTimeout(()=>toast("✅ Match certified"), 940);
     }
 
-    function goToFinal(){
-      step = 4;
-      setHUD();
-      showPanel("pFinal");
-      stopTimer();
-      typeLine("Quest complete.\nAila, you passed with distinction.\n\nAbhiraj is requesting a date. 💖");
-      animateMeters();
-    }
+    $("btnHearts").onclick = ()=>{
+      toast("Confirmed 💖");
+      typeLine(`Happy 1 month, ${CONFIG.forName}.\nFrom: ${CONFIG.fromName} 💖`);
+    };
 
-    // Copy message
-    async function copyMessage(){
+    $("btnCopyMsg").onclick = async ()=>{
+      const pick = state.wheelSaved ? `\nSaved date pick: ${state.wheelSaved}` : "";
       const msg =
-`Aila 💖
+`${CONFIG.forName} 💖
 
-I made you a little Valentine Quest and you completed it.
-So… will you be my Valentine?
+Happy 1 month.
+I made you a little anniversary website.
 
-— Abhiraj
+${pick}
 
-Rewards unlocked:
-🍝 Dinner
-🍰 Dessert
-✨ Being ridiculously cute together
+— ${CONFIG.fromName}`;
+      await copyText(msg);
+      toast("Copied ✅");
+    };
 
-When are you free? 😄`;
+    $("btnLockAgain").onclick = ()=>{
+      toast("Locked 😄");
+      showPanel("pHome");
+      typeLine("Prank complete.\nOkay okay… go back to Final 😄");
+    };
+
+    // Copy helper
+    async function copyText(text){
       try{
-        await navigator.clipboard.writeText(msg);
-        toast("Copied ✅");
-        successSound();
+        await navigator.clipboard.writeText(text);
       } catch(e){
-        const t=document.createElement("textarea");
-        t.value=msg;
-        document.body.appendChild(t);
-        t.select();
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
         document.execCommand("copy");
-        t.remove();
-        toast("Copied ✅");
+        ta.remove();
       }
     }
 
-    // Download certificate as PNG (screenshot)
-    async function downloadCertificate(){
-      const node = $("cert");
-      // Use SVG foreignObject trick (works well for simple DOM)
-      const rect = node.getBoundingClientRect();
-      const width = Math.ceil(rect.width);
-      const height = Math.ceil(rect.height);
-
-      const cloned = node.cloneNode(true);
-      cloned.style.margin = "0";
-      cloned.style.boxShadow = "none";
-
-      const wrapper = document.createElement("div");
-      wrapper.style.width = width + "px";
-      wrapper.style.height = height + "px";
-      wrapper.style.background = "#fff";
-      wrapper.style.padding = "12px";
-      wrapper.appendChild(cloned);
-
-      const svg =
-        `<svg xmlns="http://www.w3.org/2000/svg" width="${width+24}" height="${height+24}">
-          <foreignObject width="100%" height="100%">
-            <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
-              ${wrapper.innerHTML}
-            </div>
-          </foreignObject>
-        </svg>`;
-
-      const blob = new Blob([svg], {type:"image/svg+xml;charset=utf-8"});
-      const url = URL.createObjectURL(blob);
-
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = width+24;
-        canvas.height = height+24;
-        const ctx = canvas.getContext("2d");
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0,0,canvas.width,canvas.height);
-        ctx.drawImage(img,0,0);
-        URL.revokeObjectURL(url);
-
-        canvas.toBlob((png)=>{
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(png);
-          a.download = "Aila-Abhiraj-Valentine-Certificate.png";
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(()=> URL.revokeObjectURL(a.href), 1000);
-          toast("Downloaded ✅");
-          achievement("Souvenir 📸", "Certificate saved as PNG.");
-        }, "image/png");
-      };
-      img.onerror = () => {
-        toast("Download not supported here 😅");
-      };
-      img.src = url;
+    // FINAL UI update when unlocked
+    function refreshFinalUI(){
+      $("finalStamp").textContent = `✅ MATCH FOUND: ${CONFIG.forName.toUpperCase()} + ${CONFIG.fromName.toUpperCase()}`;
+      setWheelSavedText();
+      if(isFinalUnlocked()){
+        animateFinalMeters();
+      }
     }
 
-    // Preloader
-    (function runLoader(){
-      const overlay = $("overlay");
-      const loadFill = $("loadFill");
-      const loadText = $("loadText");
-      const steps = [
-        "Initializing butterflies…",
-        "Calibrating yes energy…",
-        "Warming up cheesy jokes…",
-        "Loading mini-games…",
-        "Ready ✅"
-      ];
-      let p = 0;
-      const t = setInterval(()=>{
-        loadText.textContent = steps[Math.min(p, steps.length-1)];
-        loadFill.style.width = (p*25) + "%";
-        p++;
-        if(p > 4){
-          clearInterval(t);
-          setTimeout(()=> overlay.classList.add("hide"), 350);
-        }
-      }, 420);
-    })();
+    // Init
+    function init(){
+      // initial typing
+      typeLine(`Hi ${CONFIG.forName} 💖\nWelcome to our 1-month mini-site.\nStart with Memory Quiz → then Wheel → then Story → Bingo → Countdown → Tiny Things.`);
+      // quiz
+      $("qProg").textContent = `0/${CONFIG.quiz.length}`;
+      renderQuiz();
+      // wheel
+      drawWheel();
+      setWheelSavedText();
+      $("wheelResult").textContent = "—";
+      // story
+      setStory(CONFIG.story.start);
+      // bingo
+      setupBingo();
+      // tiny
+      renderTiny();
+      // countdown
+      updateCountdown();
+      $("revealText").textContent = CONFIG.revealMessage;
 
-    // Buttons
-    $("btnStart").onclick = ()=>{
-      goToQuiz();
-      $("btnStart").textContent = "Quest Running ✅";
-      $("btnStart").disabled = true;
-      achievement("Quest Started 🚀", "Aila entered the arena.");
-    };
+      updateProgressBar();
+      refreshFinalUI();
+    }
 
-    $("btnHint").onclick = ()=>{
-      const hints = {
-        0: "Hint: Press Start 😄",
-        1: "Hint: The correct option is the one with ‘Yes energy’.",
-        2: "Hint: Try remembering corners first.",
-        3: "Hint: 90%+. We’re watching 👀",
-        4: "Hint: Download the certificate & send it 😄"
-      };
-      toast(hints[step] || "Hint: You’re doing great 😄");
-      beep(523, 70, "triangle");
-    };
+    // If someone tries to open final while locked, the showPanel() will redirect
+    // Update final meters if unlock happens later:
+    setInterval(()=> {
+      refreshFinalUI();
+      updateProgressBar();
+    }, 1500);
 
-    $("btnSound").onclick = ()=>{
-      soundOn = !soundOn;
-      $("btnSound").textContent = `Sound: ${soundOn ? "On" : "Off"}`;
-      toast(soundOn ? "Sound on 🔊" : "Sound off 🔇");
-      if(soundOn) successSound();
-    };
-
-    $("btnReset").onclick = ()=>{
-      step = 0; xp = 0; lvl = 1; streak = 0; bestStreak = 0;
-      setHUD();
-      stopTimer();
-      showPanel(null);
-      $("btnStart").disabled = false;
-      $("btnStart").textContent = "Start Quest 🚀";
-      typeLine("Reset complete.\nAila has been granted a fresh run. Use it wisely. 😄");
-      toast("Reset ✅");
-      achievement("Reset 🧼", "Clean slate. New run begins.");
-    };
-
-    $("btnHearts").onclick = ()=>{
-      heartsBurst(40);
-      toast("Valentine confirmed 💖");
-      successSound();
-      achievement("Confirmed 💘", "Match approved by the universe.");
-    };
-
-    $("btnCopy").onclick = copyMessage;
-    $("btnDownload").onclick = downloadCertificate;
-
-    // Start text
-    setHUD();
-    typeLine("Loading Valentine Quest…\nAila, your mission starts when you press Start. 💘");
+    init();
   </script>
 </body>
 </html>
